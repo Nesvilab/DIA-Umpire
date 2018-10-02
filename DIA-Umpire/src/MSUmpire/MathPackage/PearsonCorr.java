@@ -89,11 +89,6 @@ public class PearsonCorr {
                 R2 = regression.GetR2();
             }
         }
-        pointset.dispose();
-        regression.dispose();
-        regression = null;
-        arrayA = null;
-        arrayB = null;
         return R2;
     }
     
@@ -249,11 +244,6 @@ public class PearsonCorr {
                 R2 = regression.GetR2();
             }
         }
-        pointset.dispose();
-        regression.dispose();
-        regression = null;
-        arrayA = null;
-        arrayB = null;
         return R2;
     }
 }

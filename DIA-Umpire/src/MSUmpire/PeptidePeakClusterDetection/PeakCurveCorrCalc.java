@@ -47,11 +47,6 @@ public class PeakCurveCorrCalc {
         if (PeakACollection.Data.size() > 0 && PeakBCollection.Data.size() > 0) {
             corre = corr.CalcCorr(PeakACollection, PeakBCollection, NoPointPerMin);   
         }
-        PeakACollection.dispose();
-        PeakBCollection.dispose();
-        PeakACollection = null;
-        PeakBCollection = null;
-        corr = null;
         return corre;
     }
     public static float CalPeakCorr_Overlap(PeakCurve peakA, PeakCurve peakB, int Astart, int Aend, int Bstart, int Bend, boolean output, int NoPeakPerMin) throws IOException {
@@ -76,11 +71,6 @@ public class PeakCurveCorrCalc {
                 writer.close();
             }
         }
-        PeakACollection.dispose();
-        PeakBCollection.dispose();
-        PeakACollection = null;
-        PeakBCollection = null;
-        corr = null;
         return corre;
     }
 }

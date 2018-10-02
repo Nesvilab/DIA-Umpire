@@ -42,7 +42,11 @@ public class EnzymeManager {
             InputStreamToFile convert = new InputStreamToFile();
 
             File enzymeFile = convert.GetFile(is, tmpfile);
-            enzymeFactory.importEnzymes(enzymeFile);
+            try {
+                enzymeFactory.importEnzymes(enzymeFile);
+            } catch (Exception e) {
+                throw new RuntimeException("Could not import enzymes");
+            }
         }
     }
     

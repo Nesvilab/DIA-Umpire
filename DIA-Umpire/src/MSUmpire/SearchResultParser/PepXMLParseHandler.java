@@ -99,7 +99,7 @@ public class PepXMLParseHandler implements SolnaHandler<Element> {
                     float mass = (float) Math.round(Float.parseFloat(node.getChildNodes().item(k).getAttributes().getNamedItem("mass").getNodeValue()) * 1000) / 1000;
                     float massdiff2 = Float.parseFloat(node.getChildNodes().item(k).getAttributes().getNamedItem("massdiff").getNodeValue());
                     AminoAcid aa = AminoAcid.getAminoAcid(site.charAt(0));
-                    float massdiff = mass - (float)aa.getMonoisotopicMass();
+                    float massdiff = mass - (float)aa.monoisotopicMass;
 
                     if (massdiff != 0f && Math.abs(massdiff - massdiff2) < 0.1f) {
                         CheckAndAddModification(site, massdiff);
@@ -355,7 +355,7 @@ public class PepXMLParseHandler implements SolnaHandler<Element> {
                 String site = String.valueOf(PepSeq.charAt(idx - 1));
                 float mass = Float.parseFloat(node.getChildNodes().item(i).getAttributes().getNamedItem("mass").getNodeValue());
                 AminoAcid aa = AminoAcid.getAminoAcid(site.charAt(0));
-                float massdiff = mass - (float) aa.getMonoisotopicMass();
+                float massdiff = (float)(mass - aa.monoisotopicMass);
                 CheckAndAddModification(site, massdiff);
                                 
                 ModificationInfo matchmod = null;

@@ -640,7 +640,6 @@ public class PeakCurve implements Serializable  {
     public void ReleasePeakData() {
 
         this.PeakList = null;
-        this.SmoothData.dispose();
         this.SmoothData = null;
         this.PeakRegionList = null;
         this.PeakRidgeList = null;

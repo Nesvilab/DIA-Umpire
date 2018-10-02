@@ -21,13 +21,12 @@ package MSUmpire.MathPackage;
 
 import MSUmpire.BaseDataStructure.XYData;
 import MSUmpire.BaseDataStructure.XYPointCollection;
-import org.apache.avalon.framework.activity.Disposable;
 
 /**
  *
  * @author Chih-Chiang Tsou <chihchiang.tsou@gmail.com>
  */
-public class Regression implements Disposable {
+public class Regression {
 
     public Equation equation;
     protected XYPointCollection pointset;
@@ -49,11 +48,6 @@ public class Regression implements Disposable {
     protected float min_y = Float.MAX_VALUE;
     public int MinPoint=3;
 
-    @Override
-    public void dispose() {
-        this.pointset = null;
-        this.equation = null;
-    }
 
     /// <summary>
     /// Equation class: y=mx+b

@@ -20,7 +20,6 @@
 package MSUmpire.BaseDataStructure;
 
 import java.io.Serializable;
-import org.apache.avalon.framework.activity.Disposable;
 
 /*
  * Collection of two dimensional
@@ -29,7 +28,7 @@ import org.apache.avalon.framework.activity.Disposable;
  *
  * @author Chih-Chiang Tsou <chihchiang.tsou@gmail.com>
  */
-public class XYPointCollection implements Disposable,Serializable {
+public class XYPointCollection implements Serializable {
     private static final long serialVersionUID = 654648165471L;
 
     public float MaxY;
@@ -195,11 +194,4 @@ public class XYPointCollection implements Disposable,Serializable {
         return NewXYCollection;
     }
     
-    @Override
-    public void dispose() {
-        if (Data != null) {
-            this.Data.clear();
-            this.Data = null;
-        }
-    }
 }

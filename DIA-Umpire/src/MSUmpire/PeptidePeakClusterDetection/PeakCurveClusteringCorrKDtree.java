@@ -28,6 +28,8 @@ import MSUmpire.PeakDataStructure.PeakCurve;
 import MSUmpire.PeakDataStructure.SortedCurveCollectionMZ;
 import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -94,7 +96,7 @@ public class PeakCurveClusteringCorrKDtree implements Callable<ArrayList<PeakClu
         
         float Arange = peakA.EndRT() - peakA.StartRT();
         for (int charge = EndCharge; charge >= StartCharge; charge--) {
-            float mass=charge * (peakA.TargetMz - (float)ElementaryIon.proton.getTheoreticMass());
+            float mass=charge * (float)((peakA.TargetMz - ElementaryIon.proton.getTheoreticMass()));
             if(mass<parameter.MinPrecursorMass || mass>parameter.MaxPrecursorMass || (parameter.MassDefectFilter && !MD.InMassDefectRange(mass, parameter.MassDefectOffset))){
                 continue;
             }

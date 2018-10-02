@@ -37,7 +37,7 @@ public class IsotopePeakGroup {
     }
 
     public float NeutralMass(){
-        return Charge * (PrecursorMz() - (float)ElementaryIon.proton.getTheoreticMass());
+        return Charge * (float)((PrecursorMz() - ElementaryIon.proton.getTheoreticMass()));
     }
     
     public float PrecursorMz() {

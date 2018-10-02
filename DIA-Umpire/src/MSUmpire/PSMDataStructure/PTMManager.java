@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * PTM library manager from compomics
@@ -58,8 +59,12 @@ public class PTMManager {
         PTMFactory.setSerializationFolder(tmpfilefolder);
         
         PTMFactory.getInstance().clearFactory();
+      try {
         PTMFactory.getInstance().importModifications(ptmFile, false, true);
-        ptmFactory = PTMFactory.getInstance();   
+      } catch (XmlPullParserException e) {
+        throw new IOException(e);
+      }
+      ptmFactory = PTMFactory.getInstance();
         if (!ptmFactory.getDefaultModifications().isEmpty()) {
             SaveTempFile();
         } else {
@@ -77,11 +82,15 @@ public class PTMManager {
     
     
     
-    public void ImportUserMod(String file) throws IOException{
+    public void ImportUserMod(String file) throws IOException {
         File usermod=new File(file);        
         if (usermod.exists()) {
+          try {
             ptmFactory.importModifications(usermod, true,false);
-            if (!ptmFactory.getDefaultModifications().isEmpty()) {
+          } catch (XmlPullParserException e) {
+            throw new IOException(e);
+          }
+          if (!ptmFactory.getDefaultModifications().isEmpty()) {
                 SaveTempFile();
             }
             else{

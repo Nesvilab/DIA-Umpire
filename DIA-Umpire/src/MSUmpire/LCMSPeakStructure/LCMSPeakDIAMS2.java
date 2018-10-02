@@ -110,7 +110,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
         ArrayList<PeakCurve> newlist=new ArrayList<>();
         for (PeakCurve peakCurve : UnSortedPeakCurves) {
             for (int charge = 1; charge <= 2; charge++) {
-                float mass = charge * (peakCurve.TargetMz - (float)ElementaryIon.proton.getTheoreticMass());
+                float mass = charge * (float)((peakCurve.TargetMz - ElementaryIon.proton.getTheoreticMass()));
                 if (MD.InMassDefectRange(mass, parameter.MassDefectOffset)) {
                     newlist.add(peakCurve);
                     break;

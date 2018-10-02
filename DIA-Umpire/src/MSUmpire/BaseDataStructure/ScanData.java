@@ -63,7 +63,7 @@ public class ScanData extends XYPointCollection{
     }
 
     public float PrecursorMass(){
-        return PrecursorCharge * (PrecursorMz - (float)ElementaryIon.proton.getTheoreticMass());
+        return (float) (PrecursorCharge * (PrecursorMz - ElementaryIon.proton.getTheoreticMass()));
     }
     
     public XYData GetHighestPeakInMzWindow(float targetmz, float PPM) {

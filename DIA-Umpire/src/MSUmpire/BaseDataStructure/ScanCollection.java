@@ -20,13 +20,12 @@
 package MSUmpire.BaseDataStructure;
 
 import java.util.*;
-import org.apache.avalon.framework.activity.Disposable;
 
 /**
  *
  * @author Chih-Chiang Tsou <chihchiang.tsou@gmail.com>
  */
-public class ScanCollection implements Disposable{
+public class ScanCollection {
 
     public TreeMap<Integer, ScanData> ScanHashMap;
     public String Filename;
@@ -210,19 +209,6 @@ public class ScanCollection implements Disposable{
 
     public float GetElutionTimeByScanNo(int scanNo) {
         return GetScan(scanNo).RetentionTime;
-    }
-
-    @Override
-    public void dispose() {
-        this.ms1ScanIndex = null;
-        this.ms2ScanIndex = null;
-        if (ScanHashMap != null) {
-            for (ScanData scan : ScanHashMap.values()) {
-                scan.dispose();
-            }
-            ScanHashMap.clear();
-            this.ScanHashMap = null;
-        }
     }
 
     //Remove peaks whose the intensity low than the threshold

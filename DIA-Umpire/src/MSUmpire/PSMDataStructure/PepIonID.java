@@ -143,7 +143,7 @@ public class PepIonID implements Serializable {
     }
     
     public float GetPeakMz(int isotopicpeak){
-        return ObservedMz+ (isotopicpeak * (float)ElementaryIon.proton.getTheoreticMass() / Charge);
+        return ObservedMz+ (float)((isotopicpeak * ElementaryIon.proton.getTheoreticMass() / Charge));
     }
     
     public float GetRTRange(){
@@ -426,12 +426,12 @@ public class PepIonID implements Serializable {
     }
 
     public float ObservedMass() {
-        return Charge * (ObservedMz - (float)ElementaryIon.proton.getTheoreticMass());
+        return Charge * (float)((ObservedMz - ElementaryIon.proton.getTheoreticMass()));
     }
 
     public float NeutralPrecursorMz() {
         if (mz == -1f) {
-            mz = (CalcNeutralPepMass() + Charge * (float)ElementaryIon.proton.getTheoreticMass()) / Charge;
+            mz = (float)((CalcNeutralPepMass() + Charge * ElementaryIon.proton.getTheoreticMass())) / Charge;
         }
         return mz;
     }

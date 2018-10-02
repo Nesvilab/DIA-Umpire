@@ -185,10 +185,10 @@ public class PeakCluster implements Serializable {
     public float NeutralMass() {
         if (mass == 0f) {
             if (MonoIsotopePeak != null) {
-                mass = Charge * (MonoIsotopePeak.TargetMz - (float) ElementaryIon.proton.getTheoreticMass());
+                mass = Charge * (float)((MonoIsotopePeak.TargetMz - ElementaryIon.proton.getTheoreticMass()));
             }
             else {
-                mass = Charge * (mz[0] - (float) ElementaryIon.proton.getTheoreticMass());
+                mass = Charge * (float)((mz[0] - ElementaryIon.proton.getTheoreticMass()));
             }
         }
         return mass;
