@@ -31,11 +31,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -167,7 +166,7 @@ public class FastaParser implements Serializable{
         reader.close();
     }
         
-    public void digestion(int missedcleave, int minlength, int maxlength, String Decoytag) throws XmlPullParserException, IOException {
+    public void digestion(int missedcleave, int minlength, int maxlength, String Decoytag) throws IOException {
         PeptideList=new HashMap<>();
         for (ProteinEntry protein : ProteinList.values()) {
             if(protein.ACC.startsWith(Decoytag)|protein.ACC.endsWith(Decoytag)){

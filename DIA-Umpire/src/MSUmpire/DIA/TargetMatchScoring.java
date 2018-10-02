@@ -42,7 +42,7 @@ import java.util.Collections;
 import java.util.Vector;
 import javastat.multivariate.DiscriminantAnalysis;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;

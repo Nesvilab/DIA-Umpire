@@ -25,7 +25,6 @@ import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Modification tag conversion class
@@ -35,7 +34,7 @@ public class ModStringConvert {
 
     //n[43]AAAAAAGAGPEM[147]VR
 
-    public static String ConvertTPPModString(String modString, ArrayList<ModificationMatch> Modifications) throws XmlPullParserException, IOException {
+    public static String ConvertTPPModString(String modString, ArrayList<ModificationMatch> Modifications) throws IOException {
         String Sequence = modString.replace("n[", "[").replace("c[", "").replaceAll("[\\[0-9\\]]", "");
         String ConvertString = Sequence;
         while (modString.contains("[")) {

@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.regex.Pattern;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import ExternalPackages.org.hupo.psi.ms.traml.CvParamType;
 import ExternalPackages.org.hupo.psi.ms.traml.ModificationType;
@@ -60,7 +60,6 @@ import ExternalPackages.org.hupo.psi.ms.traml.TransitionType;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 import ExternalPackages.org.systemsbiology.apps.tramlparser.TraMLParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Spectral library data structure
@@ -151,7 +150,7 @@ public class FragmentLibManager implements Serializable {
         try {
             Logger.getRootLogger().info("Reading internal spectral library from file:" + path + LibID1 + ".serFS...");
             FileInputStream fileIn = new FileInputStream(path + LibID1 + ".serFS");
-            org.nustaq_old.serialization.FSTObjectInput in = new org.nustaq_old.serialization.FSTObjectInput(fileIn);
+            org.nustaq.serialization.FSTObjectInput in = new org.nustaq.serialization.FSTObjectInput(fileIn);
             FragmentLibManager FragLib = (FragmentLibManager) in.readObject();
             in.close();
             fileIn.close();
@@ -267,7 +266,7 @@ public class FragmentLibManager implements Serializable {
         writer2.close();
     }
         
-    public void ImportFragLibByTSV(String tsv) throws IOException, XmlPullParserException,MatrixLoaderException {
+    public void ImportFragLibByTSV(String tsv) throws IOException, MatrixLoaderException {
         Logger.getRootLogger().info("Parsing " + tsv);
         BufferedReader reader=new BufferedReader(new FileReader(tsv));
         PTMManager.GetInstance();
@@ -442,7 +441,7 @@ public class FragmentLibManager implements Serializable {
         CheckDecoys();
     }
 
-    public void ImportFragLibByTraML(String tramlpath, String DecoyPrefix) throws IOException, XmlPullParserException, Exception {
+    public void ImportFragLibByTraML(String tramlpath, String DecoyPrefix) throws Exception {
         Logger.getRootLogger().info("Parsing " + tramlpath);
         try {
             TraMLParser traMLParser = new TraMLParser();
@@ -553,7 +552,7 @@ public class FragmentLibManager implements Serializable {
         }
     }
 
-    public void ImportFragLibBySPTXT(String sptxtpath) throws IOException, XmlPullParserException {
+    public void ImportFragLibBySPTXT(String sptxtpath) throws IOException {
         Logger.getRootLogger().info("Parsing " + sptxtpath);
         try {
             BufferedReader reader=new BufferedReader(new FileReader(sptxtpath));

@@ -24,16 +24,14 @@ import com.vseravno.solna.SolnaParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -49,7 +47,7 @@ public class PepXMLParser {
     public boolean FilteredID = false;
     public boolean CorrectMassDiff=true;
     
-    public PepXMLParser(LCMSID singleLCMSID, String FileName, float threshold, float StartRT, float EndRT) throws ParserConfigurationException, SAXException, IOException, XmlPullParserException {
+    public PepXMLParser(LCMSID singleLCMSID, String FileName, float threshold, float StartRT, float EndRT) throws ParserConfigurationException, SAXException, IOException {
         this.singleLCMSID = singleLCMSID;
         this.FileName = FileName;
         this.threshold = threshold;
@@ -60,7 +58,7 @@ public class PepXMLParser {
     }
 
     
-    public PepXMLParser(LCMSID singleLCMSID, String FileName, float threshold, boolean CorrectMassDiff) throws ParserConfigurationException, SAXException, IOException, XmlPullParserException {
+    public PepXMLParser(LCMSID singleLCMSID, String FileName, float threshold, boolean CorrectMassDiff) throws ParserConfigurationException, SAXException, IOException {
         this.singleLCMSID = singleLCMSID;
         this.CorrectMassDiff=CorrectMassDiff;
         this.FileName = FileName;
@@ -77,7 +75,7 @@ public class PepXMLParser {
         //System.out.print("done\n");
     }
     
-    public PepXMLParser(LCMSID singleLCMSID, String FileName, float threshold) throws ParserConfigurationException, SAXException, IOException, XmlPullParserException {
+    public PepXMLParser(LCMSID singleLCMSID, String FileName, float threshold) throws ParserConfigurationException, SAXException, IOException {
         this.singleLCMSID = singleLCMSID;
         this.FileName = FileName;
         this.threshold = threshold;
@@ -92,7 +90,7 @@ public class PepXMLParser {
         //System.out.print("done\n");
     }
 
-    private void ParseSAX() throws ParserConfigurationException, SAXException, IOException, XmlPullParserException {
+    private void ParseSAX() throws IOException {
         File fXmlFile = new File(FileName);
         if (!fXmlFile.exists()) {
             Logger.getRootLogger().error("File :" + FileName + " cannot be found");
@@ -107,7 +105,7 @@ public class PepXMLParser {
         parser.parse(inputStream);
     }
 
-    public void insert_msms_run_summary(File inFile) throws FileNotFoundException, IOException {
+    public void insert_msms_run_summary(File inFile) throws IOException {
         // temp file
         File outFile = new File(FileName.replace("pep.xml", "_fixed.pep.xml"));
         FileName = FileName.replace("pep.xml", "_fixed.pep.xml");

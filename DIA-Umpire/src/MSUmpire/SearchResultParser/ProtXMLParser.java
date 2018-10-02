@@ -24,10 +24,7 @@ import com.vseravno.solna.SolnaParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -39,7 +36,7 @@ public class ProtXMLParser {
     public String FileName;
     public float threshold = 0f;
 
-    public ProtXMLParser(LCMSID singleLCMSID, String FileName, float threshold) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, XmlPullParserException, InterruptedException {
+    public ProtXMLParser(LCMSID singleLCMSID, String FileName, float threshold) throws IOException, ClassNotFoundException, InterruptedException {
         this.SingleLCMSID = singleLCMSID;
         this.FileName = FileName;
         this.threshold = threshold;
@@ -53,7 +50,7 @@ public class ProtXMLParser {
     }
 
 
-   private void ParseSAX() throws ParserConfigurationException, SAXException, IOException, XmlPullParserException {
+   private void ParseSAX() throws IOException {
         File fXmlFile = new File(FileName);
         if (!fXmlFile.exists()) {
             Logger.getRootLogger().info("File :" + FileName + " cannot be found\n");

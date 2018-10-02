@@ -26,7 +26,7 @@ import ExternalPackages.JAligner.matrix.Matrix;
 import ExternalPackages.JAligner.matrix.MatrixLoaderException;
 import java.util.ArrayList;
 import java.util.Collections;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * Generate shuffled sequence as decoy spectra for spectral library

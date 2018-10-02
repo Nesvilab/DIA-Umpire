@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * pepXML writer for targeted re-extraction
@@ -50,7 +49,7 @@ public class TargetHitPepXMLWriter {
         String Des;
     }
 
-    public TargetHitPepXMLWriter(String Filename, String Fasta, String Decoytab, TargetMatchScoring Tscoring) throws IOException, XmlPullParserException {
+    public TargetHitPepXMLWriter(String Filename, String Fasta, String Decoytab, TargetMatchScoring Tscoring) throws IOException {
         this.Filename = Filename;
         this.Fasta = Fasta;
         this.Decoytag=Decoytab;
@@ -58,7 +57,7 @@ public class TargetHitPepXMLWriter {
         write();
     }
 
-    public void write() throws IOException, XmlPullParserException {
+    public void write() throws IOException {
 
         Logger.getRootLogger().info("Writing "+Filename);
         int minlength = Integer.MAX_VALUE;

@@ -45,7 +45,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.zip.DataFormatException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
@@ -58,7 +58,6 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * MS1 peak feature data related to a LCMS1 feature map
@@ -172,7 +171,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
     }
 
     //MS1 feature detection
-    public void PeakClusterDetection() throws FileNotFoundException, IOException, InterruptedException, ExecutionException, ParserConfigurationException, SAXException, DataFormatException, XmlPullParserException {
+    public void PeakClusterDetection() throws IOException, InterruptedException, ExecutionException {
 
         if (Resume && ReadIfProcessed()) {
             return;
@@ -420,7 +419,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
         return FilenameUtils.getFullPath(ParentmzXMLName) + "interact-"+FilenameUtils.getBaseName(ParentmzXMLName) + ".iproph.prot.xml";
     }
     
-    public void ParsePepXML(DBSearchParam param, float prob) throws ParserConfigurationException, IOException, SAXException, XmlPullParserException, ClassNotFoundException, InterruptedException {
+    public void ParsePepXML(DBSearchParam param, float prob) throws ParserConfigurationException, IOException, SAXException {
         IDsummary = new LCMSID(FilenameUtils.getFullPath(ParentmzXMLName) + FilenameUtils.getBaseName(ParentmzXMLName),param.DecoyPrefix,param.FastaPath);                
         PepXMLParser pepxmlparser = new PepXMLParser(IDsummary, param.InteractPepXMLPath, prob);
         CheckPSMRT();

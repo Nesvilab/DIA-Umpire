@@ -33,7 +33,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -44,7 +43,7 @@ public class ExportWithEstimatedFDR {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, XmlPullParserException, InterruptedException, SQLException {
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, InterruptedException, SQLException {
 
         System.out.println("=================================================================================================");
         System.out.println("Umpire search result parser(version: " + UmpireInfo.GetInstance().Version + ")");

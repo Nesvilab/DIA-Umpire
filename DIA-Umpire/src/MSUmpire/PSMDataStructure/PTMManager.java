@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * PTM library manager from compomics
@@ -41,14 +40,14 @@ public class PTMManager {
     private String tempptmfile="ptmFactory-3.28.24.cus";
     private String tmpfilefolder=System.getProperty("user.home") + "/.compomics";
 
-    public static PTMManager GetInstance() throws XmlPullParserException, IOException {
+    public static PTMManager GetInstance() throws IOException {
         if (pTMManager == null) {
             pTMManager = new PTMManager();
         }
         return pTMManager;
     }
        
-    private PTMManager() throws XmlPullParserException, IOException { 
+    private PTMManager() throws IOException {
         //PTMManager.GetInstance();
         
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("resource/mods.xml");
@@ -78,7 +77,7 @@ public class PTMManager {
     
     
     
-    public void ImportUserMod(String file) throws XmlPullParserException, IOException{
+    public void ImportUserMod(String file) throws IOException{
         File usermod=new File(file);        
         if (usermod.exists()) {
             ptmFactory.importModifications(usermod, true,false);

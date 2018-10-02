@@ -42,9 +42,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Identification data structure for a LC-MS run
@@ -454,7 +453,7 @@ public class LCMSID implements Serializable {
         pepIonID.AddPSM(psm);
     }
 
-    public void LoadSequence() throws IOException, XmlPullParserException {
+    public void LoadSequence() {
         for (ProtID protID : ProteinList.values()) {
             if (protID.Sequence == null || "".equals(protID.Sequence) || "null".equals(protID.Sequence)) {
                 if (!protID.IsDecoy(DecoyTag)) {
@@ -478,7 +477,7 @@ public class LCMSID implements Serializable {
         }
     }
 
-    public void AddProtID(ProtID protID) throws ClassNotFoundException, InterruptedException, IOException, XmlPullParserException {
+    public void AddProtID(ProtID protID) {
         if (!ProteinList.containsKey(protID.getAccNo())) {
             ProteinList.put(protID.getAccNo(), protID);
         }
@@ -895,7 +894,7 @@ public class LCMSID implements Serializable {
         }
     }
 
-    public void UpdateProteinKey() throws ClassNotFoundException, InterruptedException, IOException, XmlPullParserException {
+    public void UpdateProteinKey() {
         ArrayList<ProtID> temp = new ArrayList<>();
         for (ProtID protein : ProteinList.values()) {
             temp.add(protein);
@@ -906,7 +905,7 @@ public class LCMSID implements Serializable {
         }
     }
 
-    public void FixProteinWithDecoyHead() throws ClassNotFoundException, InterruptedException, IOException, XmlPullParserException {
+    public void FixProteinWithDecoyHead() {
         for (ProtID protein : ProteinList.values()) {
             if (protein.IsDecoy(DecoyTag)) {
                 for (int i = 0; i < protein.IndisProteins.size(); i++) {

@@ -20,10 +20,10 @@
 package MSUmpire.MathPackage;
 
 import java.util.Arrays;
-import umontreal.iro.lecuyer.gof.KernelDensity;
-import umontreal.iro.lecuyer.probdist.EmpiricalDist;
-import umontreal.iro.lecuyer.probdist.NormalDist;
-import umontreal.iro.lecuyer.randvar.KernelDensityGen;
+import umontreal.ssj.gof.KernelDensity;
+import umontreal.ssj.probdist.EmpiricalDist;
+import umontreal.ssj.probdist.NormalDist;
+import umontreal.ssj.randvar.KernelDensityGen;
 
 /**
  *

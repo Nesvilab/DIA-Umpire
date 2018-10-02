@@ -44,7 +44,7 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import umontreal.iro.lecuyer.probdist.*;
+import umontreal.ssj.probdist.*;
 
 /**
  * This class provides semi-parametric mixture modeling

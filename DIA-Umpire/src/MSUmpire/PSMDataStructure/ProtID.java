@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Protein ID data structure
@@ -206,12 +205,12 @@ public class ProtID implements Serializable {
         }
     }
 
-    public void SetSequence(String Seq) throws IOException, XmlPullParserException {
+    public void SetSequence(String Seq) throws IOException {
         Sequence = Seq;
         InsilicosDigestion(1, 6, 30);
     }
 
-    public void InsilicosDigestion(int missedcleave, int minlength, int maxlength) throws XmlPullParserException, IOException {
+    public void InsilicosDigestion(int missedcleave, int minlength, int maxlength) throws IOException {
         TheoPeptides = EnzymeManager.GetInstance().GetTrypsin().digest(Sequence, missedcleave, minlength, maxlength);
         if (String.valueOf(Sequence.charAt(0)).equals("M")) {
             int mc = 0;

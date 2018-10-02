@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -23,7 +22,7 @@ public class FDR_DataSetLevel {
 
     public LCMSID combineID = null;
 
-    public void GeneratePepIonList(ArrayList<DIAPack> DIAFileList, DBSearchParam param, String combineIDPath) throws IOException, ParserConfigurationException, SAXException, XmlPullParserException, ClassNotFoundException, InterruptedException {
+    public void GeneratePepIonList(ArrayList<DIAPack> DIAFileList, DBSearchParam param, String combineIDPath) throws IOException, ParserConfigurationException, SAXException, ClassNotFoundException, InterruptedException {
 
         for (DIAPack diafile : DIAFileList) {
             diafile.ParsePepXML(param,null);

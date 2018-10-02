@@ -59,10 +59,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Main data structure which represents a DIA file
@@ -490,12 +489,12 @@ public class DIAPack {
         }
     }
 
-    public void AssignMappedPepQuant(boolean export, FragmentLibManager libManager) throws IOException, SQLException, XmlPullParserException {
+    public void AssignMappedPepQuant(boolean export, FragmentLibManager libManager) throws IOException, SQLException {
         TargetedExtractionQuant(export, libManager, 1.1f,-1f);
     }
 
     //Quantification process for peptide ions from targeted re-extraction
-    public void TargetedExtractionQuant(boolean export, FragmentLibManager libManager, float ReSearchProb, float RTWindow) throws IOException, SQLException, XmlPullParserException {
+    public void TargetedExtractionQuant(boolean export, FragmentLibManager libManager, float ReSearchProb, float RTWindow) throws IOException, SQLException {
         if (IDsummary.GetMappedPepIonList().isEmpty()) {
             Logger.getRootLogger().error("There is no peptide ion for targeted re-extraction.");
             return;
@@ -643,7 +642,7 @@ public class DIAPack {
         iProphPepXMLs.add(PepXMLPath3);
     }
     
-    public void ParsePepXML(DBSearchParam searchPara, LCMSID refID) throws ParserConfigurationException, SAXException, IOException, XmlPullParserException, ClassNotFoundException, InterruptedException {
+    public void ParsePepXML(DBSearchParam searchPara, LCMSID refID) throws ParserConfigurationException, SAXException, IOException {
 
         SetPepXMLPath();
         IDsummary = new LCMSID(FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename), searchPara.DecoyPrefix, searchPara.FastaPath);

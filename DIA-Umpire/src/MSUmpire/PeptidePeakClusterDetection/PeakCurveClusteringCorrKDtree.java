@@ -34,7 +34,6 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import net.sf.javaml.core.kdtree.KDTree;
 import net.sf.javaml.core.kdtree.KeySizeException;
-import org.apache.avalon.framework.ExceptionUtil;
 import org.apache.log4j.Logger;
 
 /**
@@ -80,7 +79,10 @@ public class PeakCurveClusteringCorrKDtree implements Callable<ArrayList<PeakClu
         try {
             found = PeakCurveSearchTree.range(new double[]{lowrt,lowmz}, new double[]{highrt,highmz});
         } catch (KeySizeException ex) {
-            Logger.getRootLogger().error(ExceptionUtil.printStackTrace(ex));
+            StringWriter w = new StringWriter();
+            PrintWriter pw = new PrintWriter(w);
+            ex.printStackTrace(pw);
+            Logger.getRootLogger().error(w.toString());
         }
         if(found==null || found.length==0){
             return ResultClusters;
@@ -151,7 +153,10 @@ public class PeakCurveClusteringCorrKDtree implements Callable<ArrayList<PeakClu
                             try {
                                 corr = PeakCurveCorrCalc.CalPeakCorr(peakA, peakB, parameter.NoPeakPerMin);
                             } catch (IOException ex) {
-                                Logger.getRootLogger().error(ExceptionUtil.printStackTrace(ex));
+                                StringWriter w = new StringWriter();
+                                PrintWriter pw = new PrintWriter(w);
+                                ex.printStackTrace(pw);
+                                Logger.getRootLogger().error(w.toString());
                             }
                             if (Float.isNaN(corr)) {
                                 corr = 0f;

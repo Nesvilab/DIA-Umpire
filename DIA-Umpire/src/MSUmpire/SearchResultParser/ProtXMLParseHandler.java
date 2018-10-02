@@ -29,7 +29,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -54,7 +53,7 @@ public class ProtXMLParseHandler implements SolnaHandler<Element> {
         }
     }
     
-    private void ParseProteinGroupNode(Element protgroupnode) throws XmlPullParserException, IOException, ClassNotFoundException, InterruptedException {
+    private void ParseProteinGroupNode(Element protgroupnode) throws IOException, ClassNotFoundException, InterruptedException {
 
         int groupindex = Integer.parseInt(protgroupnode.getAttributes().getNamedItem("group_number").getNodeValue());
         

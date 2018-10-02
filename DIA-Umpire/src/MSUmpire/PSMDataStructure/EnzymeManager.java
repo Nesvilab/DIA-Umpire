@@ -24,7 +24,6 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Enzyme manager from compomics library
@@ -35,7 +34,7 @@ public class EnzymeManager {
     private static EnzymeManager enzymeManager;
     EnzymeFactory enzymeFactory = null;
 
-    public EnzymeManager() throws XmlPullParserException, IOException {
+    public EnzymeManager() throws IOException {
         if (enzymeFactory == null) {
             enzymeFactory = EnzymeFactory.getInstance();
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("resource/enzymes.xml");
@@ -47,7 +46,7 @@ public class EnzymeManager {
         }
     }
     
-    public static EnzymeManager GetInstance() throws XmlPullParserException, IOException {
+    public static EnzymeManager GetInstance() throws IOException {
         if (enzymeManager == null) {
             enzymeManager = new EnzymeManager();
         }

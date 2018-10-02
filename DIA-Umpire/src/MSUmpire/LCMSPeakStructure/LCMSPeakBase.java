@@ -40,7 +40,7 @@ import net.sf.javaml.core.kdtree.KDTree;
 import net.sf.javaml.core.kdtree.KeyDuplicateException;
 import net.sf.javaml.core.kdtree.KeySizeException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.log4j.Logger;
 import org.nustaq.serialization.FSTObjectInput;
@@ -399,7 +399,7 @@ public class LCMSPeakBase {
             Logger.getRootLogger().info("Old PeakCluster serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS...");
 
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName)+ FilenameUtils.getBaseName(ParentmzXMLName)+"_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS");
-            org.nustaq_old.serialization.FSTObjectInput in = new org.nustaq_old.serialization.FSTObjectInput(fileIn);
+            org.nustaq.serialization.FSTObjectInput in = new org.nustaq.serialization.FSTObjectInput(fileIn);
             PeakClusters = (ArrayList<PeakCluster>) in.readObject();
             in.close();
             fileIn.close();            
