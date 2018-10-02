@@ -20,7 +20,10 @@ sourceSets {
     main {
         java {
             srcDirs = ['src']
-            includes = ['ExternalPackages/jMEF', 'MSUmpire/']
+            includes = ['ExternalPackages/SortedListLib/',
+                        'ExternalPackages/JAligner/',
+                        'ExternalPackages/jMEF/',
+                        'MSUmpire/']
         }
         resources {
             srcDirs = ['resources', 'tools', 'src']
@@ -37,8 +40,18 @@ dependencies {
     //api 'org.apache.commons:commons-math3:3.6.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
-    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
 
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile 'org.apache.commons:commons-lang3:3.8.1'
+    compile 'commons-codec:commons-codec:1.11'
+
+
+    //compile group: 'uk.ac.ebi.jmzml', name: 'jmzml', version: '1.7.4'
+
+
+    compile 'com.vseravno.solna:solna:0.5.1' // for MSUmpire.SearchResultParser.PepXMLParser
+    compile 'de.ruedigermoeller:fst:2.57' // for MSUmpire.SpectrumParser.mzXMLParser
 
     //compile 'org.jfree:jfreechart:1.5.0' // for org.jfree.data.xy.XYSeriesCollection
     compile 'org.jfree:jfreechart:1.0.19'
@@ -59,4 +72,8 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
     jcenter()
+}
+
+task printLocations << {
+    configurations.compile.each { println it }
 }
