@@ -2,7 +2,6 @@ plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
     id 'idea'
-    id "com.github.johnrengelman.shadow" version "4.0.0"
 }
 
 
@@ -28,7 +27,7 @@ sourceSets {
                         'MSUmpire/']
         }
         resources {
-            srcDirs = ['resources', 'tools', 'src']
+            srcDirs = ['src/resource']
             excludes = ['*.java']
             //excludes = ['*.java', '*.jar']
         }
@@ -36,10 +35,6 @@ sourceSets {
     }
 }
 
-shadowJar {
-    classifier = null
-    minimize()
-}
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
