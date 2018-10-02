@@ -26,7 +26,7 @@ tasks.withType(JavaCompile) {
 }
 
 // Define the main class for the application
-mainClassName = 'DIA_Umpire_SE'
+mainClassName = 'dia_umpire_se.DIA_Umpire_SE'
 
 sourceSets {
     main {
