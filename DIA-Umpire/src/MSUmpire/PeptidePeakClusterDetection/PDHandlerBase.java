@@ -304,9 +304,6 @@ public class PDHandlerBase {
                 }
             }
             preRT = scanData.RetentionTime;
-            if (ReleaseScans) {
-                scanData.dispose();
-            }
             /** the if statement below does PeakCurveSmoothing() and ClearRawPeaks()
              */
             final boolean last_iter = idx + 1 == idx_end;
