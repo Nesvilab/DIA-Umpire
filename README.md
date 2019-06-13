@@ -14,7 +14,7 @@ DIA-Umpire is an open source Java program for computational analysis of data ind
 
 
 # Suggested workflow
-Depending on the scale of applications, we describe here different application scenarios which require different combinations of DIA-Umpire modules
+Depending on the scale of applications, three application scenarios which require different combinations of DIA-Umpire modules are described in our [userguides] (http://msfragger.nesvilab.org/).
 
 1. Identification only analysis (Steps A->B)
 
@@ -32,6 +32,8 @@ DIA-Umpire is written in Java, which is cross operating system programming langu
 
 <br>
 
+
+# Other Useages
 
 **DIA_Umpire_SE**
 
