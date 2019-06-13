@@ -1,11 +1,13 @@
 
-<img src="Fig/DIA_Umpire_logo.jpg" width="200px" hspace="3px" align="right"/>
+<img src="Fig/DIA_Umpire_logo.jpg" width="200px" hspace="3px" align="left"/>
 
 **DIA-Umpire**: 
+DIA-Umpire is an open source Java program for computational analysis of data independent acquisition (DIA) mass spectrometry-based proteomics data. It enables untargeted peptide and protein identification and quantitation using DIA data, and also incorporates targeted extraction to reduce the number of cases of missing quantitation. For more details about the algorithms used and performance evaluation, please refer to following DIA-Umpire publication.
+•	Chih-Chiang Tsou, Dmitry Avtonomov, Brett Larsen, Monika Tucholska, Hyungwon Choi, Anne-Claude Gingras, and Alexey I. Nesvizhskii, “DIA-Umpire: comprehensive computational framework for data independent acquisition proteomics,” Nature Methods, 2015.
+•	Chih-Chiang Tsou, Chia-Feng Tsai, Yu-Ju Chen, and Alexey I. Nesvizhskii, “Untargeted, spectral library-free analysis of data independent acquisition proteomics data generated using Orbitrap mass spectrometers,” Submitted, 2016.
 
 
 
-The followings are the brief descriptions for each NetBeans project
 
 **DIA_Umpire_SE**
 
