@@ -38,6 +38,8 @@ DIA-Umpire is written in Java, which is cross operating system programming langu
 The first step of DIA-Umpire analysis. It is a signal extraction module to generate pseudo MS/MS spectra given a DIA file 
   * java -jar -Xmx8G DIA_Umpire_SE.jar mzMXL_file diaumpire.se_params
 
+<!---
+
 **DIA_Umpire_LCMSIDGen**
 
 After untargeted identification analysis, DIA-Umpire generates untargeted peptide IDs using pepXML files and output as *LCMSID file, which is the input file format for internal and external library searches.
@@ -61,6 +63,8 @@ DIA-Umpire protein quantification module takes *LCMSID file as input, the output
 **DIA-Umpire_To_Skyline**
 
 Module to generate raw-intensity pseudo MS/MS spectra. (without intensity adjustments) 
+
+-->
 
 **DIA-Umpire**
 
