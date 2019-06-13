@@ -1,8 +1,37 @@
-**DIA-Umpire**: 
 
-Computational analysis for mass spectrometry-based proteomics data
+<img src="Fig/DIA_Umpire_logo.jpg" width="200px" hspace="3px" align="left"/>
 
-The followings are the brief descriptions for each NetBeans project
+DIA-Umpire is an open source Java program for computational analysis of data independent acquisition (DIA) mass spectrometry-based proteomics data. It enables untargeted peptide and protein identification and quantitation using DIA data, and also incorporates targeted extraction to reduce the number of cases of missing quantitation. 
+
+<br>
+
+# Four Major Modules
+<img src="Fig/Modules.jpg" align="center"/>
+
+<br>
+
+
+# Suggested workflow
+Depending on the scale of applications, three application scenarios which require different combinations of DIA-Umpire modules are described in our [user guides](/DIA_Umpire_Manual_v2.0.pdf).
+
+1. Identification only analysis (Steps A->B)
+
+2. Small scale identification and quantitation analysis with minimal computational costs (Steps A->B->D)
+
+3. Complete DIA-Umpire identification and quantitation analysis (Steps A->B->C->D)
+
+
+<br>
+
+
+
+# Installation
+DIA-Umpire is written in Java, which is cross operating system programming language. To execute DIA-Umpire, Java 7 or higher (download link:Java SE Runtime Environment 7) version is required. As a rule of thumb, it is recommended have at least double the amount of RAM as the average size of your mzXML files (mzXML written in 32-bit format without zlib compression). If mzXML is in 64-bit format, then RAM requirements should be approximately the size of the file.
+
+<br>
+
+
+# Other Usages
 
 **DIA_Umpire_SE**
 
