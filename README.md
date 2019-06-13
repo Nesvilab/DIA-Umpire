@@ -14,12 +14,13 @@ DIA-Umpire is an open source Java program for computational analysis of data ind
 
 
 # Suggested workflow
+Depending on the scale of applications, we describe here differentapplication scenarios which require different combinations of DIA-Umpire modules
 
-## Identification only analysis (Steps A->B)
+1. Identification only analysis (Steps A->B)
 
-## Small scale identification and quantitation analysis with minimal computational costs (Steps A->B->D)
+2. Small scale identification and quantitation analysis with minimal computational costs (Steps A->B->D)
 
-## Complete DIA-Umpire identification and quantitation analysis (Steps A->B->C->D)
+3. Complete DIA-Umpire identification and quantitation analysis (Steps A->B->C->D)
 
 
 <br>
