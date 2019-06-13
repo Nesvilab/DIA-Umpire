@@ -1,5 +1,5 @@
 
-
+![Alt text](Fig/DIA_Umpire_logo.jpg?raw=true "Title")
 
 
 **DIA-Umpire**: 
