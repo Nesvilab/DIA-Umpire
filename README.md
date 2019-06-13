@@ -31,7 +31,7 @@ DIA-Umpire is written in Java, which is cross operating system programming langu
 <br>
 
 
-# Other Useages
+# Other Usages
 
 **DIA_Umpire_SE**
 
