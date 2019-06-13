@@ -5,17 +5,14 @@ DIA-Umpire is an open source Java program for computational analysis of data ind
 
 <br>
 
-## Modules
-Four major modules are included in DIA-Umpire (as shown in the figure), including:
-- DIA-Umpire signal extraction module
-- Untargeted MS/MS database search
-- DIA-Umpire targeted re-extraction module
-- DIA-Umpire quantitation module
-
+## Four Major Modules
 <img src="Fig/Modules.jpg" align="left"/>
 
+<br>
 
+## Suggested workflow
 
+<br>
 
 
 **DIA_Umpire_SE**
