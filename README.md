@@ -1,10 +1,10 @@
 
-![Alt text](Fig/DIA_Umpire_logo.jpg?raw=true "Title")
+![Alt text](Fig/DIA_Umpire_logo.jpg?raw=true "Computational analysis for mass spectrometry-based proteomics data")
 
 
 **DIA-Umpire**: 
 
-Computational analysis for mass spectrometry-based proteomics data
+
 
 The followings are the brief descriptions for each NetBeans project
 
