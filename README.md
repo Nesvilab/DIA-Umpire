@@ -1,6 +1,5 @@
 
-![Alt text](Fig/DIA_Umpire_logo.jpg?raw=true "Computational analysis for mass spectrometry-based proteomics data")
-
+<img src="Fig/DIA_Umpire_logo.jpg" width="200px" hspace="3px" align="right"/>
 
 **DIA-Umpire**: 
 
