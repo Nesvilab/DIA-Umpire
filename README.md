@@ -10,7 +10,12 @@ DIA-Umpire is an open source Java program for computational analysis of data ind
 
 <br>
 
+
+
+
 ## Suggested workflow
+
+
 
 <br>
 
