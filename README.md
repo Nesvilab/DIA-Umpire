@@ -25,7 +25,7 @@ Depending on the scale of applications, three application scenarios which requir
 
 
 
-# Installation
+# System Requirement
 DIA-Umpire is written in Java, which is cross operating system programming language. To execute DIA-Umpire, Java 7 or higher (download link:Java SE Runtime Environment 7) version is required. As a rule of thumb, it is recommended have at least double the amount of RAM as the average size of your mzXML files (mzXML written in 32-bit format without zlib compression). If mzXML is in 64-bit format, then RAM requirements should be approximately the size of the file.
 
 <br>
