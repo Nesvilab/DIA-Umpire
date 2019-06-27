@@ -158,6 +158,15 @@ public class DIA_Umpire_SE {
                         param.AdjustFragIntensity = Boolean.parseBoolean(value);
                         break;
                     }
+                    case "Q1":
+                        param.Q1 = Boolean.parseBoolean(value);
+                        break;
+                    case "Q2":
+                        param.Q2 = Boolean.parseBoolean(value);
+                        break;
+                    case "Q3":
+                        param.Q3 = Boolean.parseBoolean(value);
+                        break;
                     case "SE.MS1PPM": {
                         param.MS1PPM = Float.parseFloat(value);
                         break;
