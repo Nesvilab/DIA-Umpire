@@ -44,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -1008,7 +1009,7 @@ public class DIAPack {
             try {
                 bw2 = Files.newBufferedWriter(Paths.get(filename), StandardCharsets.ISO_8859_1);
             } catch (final IOException ex) {
-                throw new RuntimeException(ex);
+                throw new UncheckedIOException(ex);
             }
             DIAPack.file_handlers.put(f, bw2);
             return bw2;

@@ -37,6 +37,9 @@ public class InstrumentParameter implements Serializable{
     private static final long serialVersionUID = 7563887811638875862L;
 
     public int Resolution;
+    public boolean Q1 = true;
+    public boolean Q2 = true;
+    public boolean Q3 = true;
     public float MS1PPM;
     public float MS2PPM;
     public float SNThreshold;
