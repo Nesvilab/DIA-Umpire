@@ -41,6 +41,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
+import umich.ms.fileio.filetypes.mzml.MZMLFile;
 
 /* * 
  * mzXML parser
