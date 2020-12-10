@@ -24,16 +24,17 @@ import MSUmpire.BaseDataStructure.ScanCollection;
 import MSUmpire.BaseDataStructure.SpectralDataType;
 import MSUmpire.BaseDataStructure.XYData;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.List;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.concurrent.*;
+import java.util.zip.Deflater;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -41,7 +42,16 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
+import umich.ms.datatypes.LCMSDataSubset;
+import umich.ms.datatypes.scan.IScan;
+import umich.ms.datatypes.scan.StorageStrategy;
+import umich.ms.datatypes.scan.props.PrecursorInfo;
+import umich.ms.datatypes.scancollection.impl.ScanCollectionDefault;
+import umich.ms.datatypes.spectrum.ISpectrum;
+import umich.ms.fileio.filetypes.AbstractLCMSDataSource;
 import umich.ms.fileio.filetypes.mzml.MZMLFile;
+import umich.ms.fileio.filetypes.mzxml.MZXMLFile;
+import umich.ms.fileio.filetypes.thermo.ThermoRawFile;
 
 /* * 
  * mzXML parser
@@ -51,7 +61,132 @@ import umich.ms.fileio.filetypes.mzml.MZMLFile;
  * @author Chih-Chiang Tsou
  */
 public final class mzXMLParser  extends SpectrumParserBase{
+    public static void main(final String[] args) throws Exception{
+//        to_mzXML("/home/ci/tmp/tkQE170512_U_ThermoFixed_DIA_01_Q3.mzXML");
+        to_mzXML("/home/ci/DIA-U_batmass_io_test/JHU_LM_DIA_Pancreatic_2A6_02.mzML");
+    }
+    public static String to_mzXML(final String path) throws Exception{
+        final int numThreads = 10;
+        final int parsingTimeout = 4;
+        ScanCollectionDefault scans = new ScanCollectionDefault();
+        scans.setDefaultStorageStrategy(StorageStrategy.STRONG);
+        scans.isAutoloadSpectra(true);
 
+        final String basename = path.substring(0, path.lastIndexOf("."));
+        final String ext = path.substring(path.lastIndexOf(".") + 1);
+        final AbstractLCMSDataSource<?> source;
+        switch (ext.toLowerCase()) {
+            case "mzml":
+                source = new MZMLFile(path);
+                break;
+            case "mzxml":
+                source = new MZXMLFile(path);
+                break;
+            case "raw":
+                source = new ThermoRawFile(path);
+                break;
+            default:
+                throw new RuntimeException("Unrecognized file extension: " + ext);
+        }
+
+        source.setExcludeEmptyScans(true);
+        source.setNumThreadsForParsing(numThreads);
+        source.setParsingTimeout(parsingTimeout);
+        scans.setDataSource(source);
+
+        scans.loadData(LCMSDataSubset.WHOLE_RUN);
+        final TreeMap<Integer, IScan> num2scan = scans.getMapNum2scan();
+//        final StringBuilder sb_all = new StringBuilder();
+        final Path ret = Paths.get(basename + ".mzXML");
+        ret.toFile().deleteOnExit();
+        final OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(ret, StandardOpenOption.CREATE_NEW), StandardCharsets.ISO_8859_1);
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                "<mzXML xmlns=\"http://sashimi.sourceforge.net/schema_revision/mzXML_3.2\"\n" +
+                "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                "       xsi:schemaLocation=\"http://sashimi.sourceforge.net/schema_revision/mzXML_3.2 http://sashimi.sourceforge.net/schema_revision/mzXML_3.2/mzXML_idx_3.2.xsd\">\n"+
+               "  <msRun>\n");
+        writer.write(sb.toString());
+//        System.out.print(sb.toString());
+//        sb_all.append(sb);
+        sb.setLength(0);
+
+        int iii = 1;
+        for (final Map.Entry<Integer, IScan> entry : num2scan.entrySet()) {
+            final IScan value = entry.getValue();
+            final ISpectrum spectrum = value.getSpectrum();
+            sb.append(String.format("    <scan num=\"%d\"\n" +
+                            "          scanType=\"%s\"\n" +
+                            "          centroided=\"%d\"\n" +
+                            "          msLevel=\"%d\"\n" +
+                            "          peaksCount=\"%d\"\n" +
+                            "          polarity=\"%s\"\n" +
+                            "          retentionTime=\"PT%s\"\n" +
+                            "          lowMz=\"%f\"\n" +
+                            "          highMz=\"%f\"\n" +
+                            "          basePeakMz=\"%f\"\n" +
+                            "          basePeakIntensity=\"%f\"\n" +
+                            "          totIonCurrent=\"%f\">\n",
+                    value.getNum(),
+                    value.getScanType() == null ? "Full" : value.getScanType().name(),
+                    value.isCentroided() ? 1 : 0,
+                    value.getMsLevel(),
+                    spectrum.getMZs().length,
+                    value.getPolarity().toString(),
+                    value.getRt() * 60 + "S",
+                    spectrum.getMinMZ(),
+                    spectrum.getMaxMZ(),
+                    value.getBasePeakMz(),
+                    value.getBasePeakIntensity(),
+                    value.getTic()));
+            final PrecursorInfo precursor = value.getPrecursor();
+            if (precursor != null)
+                sb.append(String.format("      <precursorMz precursorIntensity=\"%f\" precursorCharge=\"%d\">%f</precursorMz>\n",
+                        precursor.getIntensity() == null ? 0 : precursor.getIntensity(),
+                        precursor.getCharge(),
+                        precursor.getMzTarget()));
+            final ByteBuffer byteBuffer = ByteBuffer.allocate(spectrum.getMZs().length * 2 * 4);
+            for (int i = 0; i < spectrum.getMZs().length; i++) {
+                byteBuffer.putInt(Float.floatToRawIntBits((float) spectrum.getMZs()[i]));
+                byteBuffer.putInt(Float.floatToRawIntBits((float) spectrum.getIntensities()[i]));
+            }
+
+            // Compress the bytes
+            final byte[] output = new byte[byteBuffer.array().length << 1];
+            final Deflater compresser = new Deflater();
+            compresser.setInput(byteBuffer.array());
+            compresser.finish();
+            final int compressedDataLength = compresser.deflate(output);
+            compresser.end();
+            sb.append(String.format("      <peaks compressionType=\"zlib\"\n" +
+                            "             compressedLen=\"%d\"\n" +
+                            "             precision=\"32\"\n" +
+                            "             byteOrder=\"network\"\n" +
+                            "             contentType=\"m/z-int\">%s</peaks>\n",
+                    compressedDataLength,
+                    Base64.getEncoder().encodeToString(Arrays.copyOf(output, compressedDataLength))
+            ));
+            sb.append("    </scan>\n");
+
+            writer.write(sb.toString());
+//            System.out.print(sb.toString());
+//            sb_all.append(sb);
+            sb.setLength(0);
+
+//             if (++iii == 93) break;
+        }
+        sb.append("  </msRun>\n");
+        sb.append("</mzXML>");
+
+        writer.write(sb.toString());
+//        System.out.print(sb.toString());
+//        sb_all.append(sb);
+        sb.setLength(0);
+
+        writer.close();
+//        System.out.println(sb_all.toString());
+        return ret.toString();
+    }
     public TreeMap<Integer, Long> ScanIndex=null;
     public mzXMLParser(String filename, InstrumentParameter parameter, SpectralDataType.DataType datatype, DIA_Setting dIA_Setting, int NoCPUs) throws Exception {
         super(filename,parameter,datatype,dIA_Setting,NoCPUs);
