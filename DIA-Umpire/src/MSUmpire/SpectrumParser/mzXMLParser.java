@@ -52,6 +52,7 @@ import umich.ms.fileio.filetypes.AbstractLCMSDataSource;
 import umich.ms.fileio.filetypes.mzml.MZMLFile;
 import umich.ms.fileio.filetypes.mzxml.MZXMLFile;
 import umich.ms.fileio.filetypes.thermo.ThermoRawFile;
+import umich.ms.msfiletoolbox.MsftbxInfo;
 
 /* * 
  * mzXML parser
@@ -83,6 +84,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                 source = new MZXMLFile(path);
                 break;
             case "raw":
+                System.out.println("Batmass-IO version " + MsftbxInfo.getVersion());
                 source = new ThermoRawFile(path);
                 break;
             default:

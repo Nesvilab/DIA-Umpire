@@ -51,7 +51,7 @@ dependencies {
     compile 'ca.umontreal.iro.simul:ssj:3.3.0'
 
     compile fileTree(dir: '../libs', include: '*.jar')
-
+    implementation 'com.github.chhh:batmass-io:1.22.1'
     testImplementation 'junit:junit:4.12'
 
     compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '10.0.0.M2'
@@ -60,6 +60,7 @@ dependencies {
 repositories {
     mavenCentral()
     jcenter()
+    flatDir {dirs '../lib'}
 }
 
 task printJarLocations << {
