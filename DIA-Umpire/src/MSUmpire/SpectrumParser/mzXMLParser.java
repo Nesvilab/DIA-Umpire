@@ -142,11 +142,18 @@ public final class mzXMLParser  extends SpectrumParserBase{
                     value.getBasePeakIntensity(),
                     value.getTic()));
             final PrecursorInfo precursor = value.getPrecursor();
-            if (precursor != null)
-                sb.append(String.format("      <precursorMz precursorIntensity=\"%f\" precursorCharge=\"%d\">%f</precursorMz>\n",
+            if (precursor != null) {
+                final Double windowWideness = precursor.getMzRangeEnd() == null && precursor.getMzRangeStart() == null ?
+                        null :
+                        precursor.getMzRangeEnd() - precursor.getMzRangeStart();
+                sb.append(String.format("      <precursorMz precursorIntensity=\"%f\"%s%s%s%s>%f</precursorMz>\n",
                         precursor.getIntensity() == null ? 0 : precursor.getIntensity(),
-                        precursor.getCharge(),
+                        precursor.getParentScanNum() == null ? "" : String.format(" precursorScanNum=\"%d\"", precursor.getParentScanNum()),
+                        precursor.getActivationInfo().getActivationMethod() == null ? "" : String.format(" activationMethod=\"%s\"", precursor.getActivationInfo().getActivationMethod()),
+                        precursor.getCharge() == null ? "" : String.format(" precursorCharge=\"%d\"", precursor.getCharge()),
+                        windowWideness == null ? "" : String.format(" windowWideness=\"%f\"", windowWideness),
                         precursor.getMzTarget()));
+            }
             final ByteBuffer byteBuffer = ByteBuffer.allocate(spectrum.getMZs().length * 2 * 4);
             for (int i = 0; i < spectrum.getMZs().length; i++) {
                 byteBuffer.putInt(Float.floatToRawIntBits((float) spectrum.getMZs()[i]));
