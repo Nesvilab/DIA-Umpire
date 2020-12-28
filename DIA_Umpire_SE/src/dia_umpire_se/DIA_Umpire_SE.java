@@ -53,6 +53,7 @@ public class DIA_Umpire_SE {
     public static void main(String[] args) throws InterruptedException, FileNotFoundException, ExecutionException, IOException, ParserConfigurationException, DataFormatException, SAXException, Exception {
         System.out.println("=================================================================================================");
         System.out.println("DIA-Umpire singal extraction analysis  (version: " + UmpireInfo.GetInstance().Version + ")");
+        System.out.println("(c) University of Michigan");
         if (args.length < 2 || args.length > 3) {
             System.out.println("command format error, the correct format is: java -jar -Xmx8G DIA_Umpire_SE.jar mzMXL_file diaumpire_se.params");
             System.out.println("To fix DIA setting, use : java -jar -Xmx8G DIA_Umpire_SE.jar mzMXL_file diaumpire_se.params -f");
