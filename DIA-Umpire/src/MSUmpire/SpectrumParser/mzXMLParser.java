@@ -67,6 +67,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
         to_mzXML("/home/ci/DIA-U_batmass_io_test/JHU_LM_DIA_Pancreatic_2A6_02.mzML");
     }
     public static String to_mzXML(final String path) throws Exception{
+    public static String to_mzXML(final String path) throws Exception {
         final int numThreads = 10;
         final int parsingTimeout = 4;
         ScanCollectionDefault scans = new ScanCollectionDefault();
@@ -106,8 +107,8 @@ public final class mzXMLParser  extends SpectrumParserBase{
         sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
                 "<mzXML xmlns=\"http://sashimi.sourceforge.net/schema_revision/mzXML_3.2\"\n" +
                 "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "       xsi:schemaLocation=\"http://sashimi.sourceforge.net/schema_revision/mzXML_3.2 http://sashimi.sourceforge.net/schema_revision/mzXML_3.2/mzXML_idx_3.2.xsd\">\n"+
-               "  <msRun>\n");
+                "       xsi:schemaLocation=\"http://sashimi.sourceforge.net/schema_revision/mzXML_3.2 http://sashimi.sourceforge.net/schema_revision/mzXML_3.2/mzXML_idx_3.2.xsd\">\n" +
+                "  <msRun>\n");
         writer.write(sb.toString());
 //        System.out.print(sb.toString());
 //        sb_all.append(sb);
