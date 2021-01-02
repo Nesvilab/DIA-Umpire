@@ -25,11 +25,13 @@ import MSUmpire.BaseDataStructure.SpectralDataType;
 import MSUmpire.BaseDataStructure.XYData;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
@@ -64,9 +66,214 @@ import umich.ms.msfiletoolbox.MsftbxInfo;
 public final class mzXMLParser  extends SpectrumParserBase{
     public static void main(final String[] args) throws Exception{
 //        to_mzXML("/home/ci/tmp/tkQE170512_U_ThermoFixed_DIA_01_Q3.mzXML");
-        to_mzXML("/home/ci/DIA-U_batmass_io_test/JHU_LM_DIA_Pancreatic_2A6_02.mzML");
+//        to_mzXML("/home/ci/DIA-U_batmass_io_test/JHU_LM_DIA_Pancreatic_2A6_02.mzML");
+
+        try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML"), StandardCharsets.US_ASCII)) {
+            to_mzML("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML",
+                    bw);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
     }
-    public static String to_mzXML(final String path) throws Exception{
+
+    public static String to_mzML(final String path, final BufferedWriter xmloutput) throws IOException, java.security.NoSuchAlgorithmException {
+        final String head_format_str = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                "<indexedmzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd\">\n" +
+                "  <mzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd\" id=\"%s\" version=\"1.1.0\">\n" +
+                "    <cvList count=\"2\">\n" +
+                "      <cv id=\"MS\" fullName=\"Proteomics Standards Initiative Mass Spectrometry Ontology\" version=\"3.60.0\" URI=\"http://psidev.cvs.sourceforge.net/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo\"/>\n" +
+                "      <cv id=\"UO\" fullName=\"Unit Ontology\" version=\"12:10:2011\" URI=\"http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo\"/>\n" +
+                "    </cvList>\n" +
+                "    <fileDescription>\n" +
+                "      <fileContent>\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000580\" name=\"MSn spectrum\" value=\"\"/>\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000127\" name=\"centroid spectrum\" value=\"\"/>\n" +
+                "      </fileContent>\n" +
+                "    </fileDescription>\n" +
+                "    <softwareList count=\"1\">\n" +
+                "      <software id=\"pwiz_3.0.6002_x0020__x0028_TPP_x0020_v5.0.0_x0020_Typhoon_x002c__x0020_Build_x0020_201610181405-exported_x0020__x0028_Linux-x86_64_x0029__x0029_\" version=\"3.0.6002 (TPP v5.0.0 Typhoon, Build 201610181405-exported (Linux-x86_64))\">\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000615\" name=\"ProteoWizard software\" value=\"\"/>\n" +
+                "      </software>\n" +
+                "    </softwareList>\n" +
+                "    <instrumentConfigurationList count=\"1\">\n" +
+                "      <instrumentConfiguration id=\"IC\">\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000031\" name=\"instrument model\" value=\"\"/>\n" +
+                "      </instrumentConfiguration>\n" +
+                "    </instrumentConfigurationList>\n" +
+                "    <dataProcessingList count=\"1\">\n" +
+                "      <dataProcessing id=\"pwiz_Reader_conversion\">\n" +
+                "        <processingMethod order=\"0\" softwareRef=\"pwiz_3.0.6002_x0020__x0028_TPP_x0020_v5.0.0_x0020_Typhoon_x002c__x0020_Build_x0020_201610181405-exported_x0020__x0028_Linux-x86_64_x0029__x0029_\">\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000544\" name=\"Conversion to mzML\" value=\"\"/>\n" +
+                "        </processingMethod>\n" +
+                "      </dataProcessing>\n" +
+                "    </dataProcessingList>\n" +
+                "    <run id=\"%s\" defaultInstrumentConfigurationRef=\"IC\">\n" +
+                "      <spectrumList count=\"%d\" defaultDataProcessingRef=\"pwiz_Reader_conversion\">\n";
+        final String spectrum_indent = "        ";
+        final String spectrum_format_str = "<spectrum index=\"%d\" id=\"index=%d\" defaultArrayLength=\"%d\">\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000580\" name=\"MSn spectrum\" value=\"\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000511\" name=\"ms level\" value=\"2\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000127\" name=\"centroid spectrum\" value=\"\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000796\" name=\"spectrum title\" value=\"%s\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000130\" name=\"positive scan\" value=\"\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000528\" name=\"lowest observed m/z\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000527\" name=\"highest observed m/z\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000285\" name=\"total ion current\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000504\" name=\"base peak m/z\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000505\" name=\"base peak intensity\" value=\"%f\"/>\n" +
+                "          <scanList count=\"1\">\n" +
+                "            <cvParam cvRef=\"MS\" accession=\"MS:1000795\" name=\"no combination\" value=\"\"/>\n" +
+                "            <scan>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000016\" name=\"scan start time\" value=\"%f\" unitCvRef=\"UO\" unitAccession=\"UO:0000010\" unitName=\"second\"/>\n" +
+                "            </scan>\n" +
+                "          </scanList>\n" +
+                "          <precursorList count=\"1\">\n" +
+                "            <precursor>\n" +
+                "              <selectedIonList count=\"1\">\n" +
+                "                <selectedIon>\n" +
+                "                  <cvParam cvRef=\"MS\" accession=\"MS:1000744\" name=\"selected ion m/z\" value=\"%f\" unitCvRef=\"MS\" unitAccession=\"MS:1000040\" unitName=\"m/z\"/>\n" +
+                "                  <cvParam cvRef=\"MS\" accession=\"MS:1000041\" name=\"charge state\" value=\"%d\"/>\n" +
+                "                </selectedIon>\n" +
+                "              </selectedIonList>\n" +
+                "              <activation>\n" +
+                "              </activation>\n" +
+                "            </precursor>\n" +
+                "          </precursorList>\n" +
+                "          <binaryDataArrayList count=\"2\">\n" +
+                "            <binaryDataArray encodedLength=\"%d\">\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000521\" name=\"32-bit float\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000576\" name=\"no compression\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000514\" name=\"m/z array\" value=\"\" unitCvRef=\"MS\" unitAccession=\"MS:1000040\" unitName=\"m/z\"/>\n" +
+                "              <binary>%s</binary>\n" +
+                "            </binaryDataArray>\n" +
+                "            <binaryDataArray encodedLength=\"%d\">\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000521\" name=\"32-bit float\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000576\" name=\"no compression\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000515\" name=\"intensity array\" value=\"\" unitCvRef=\"MS\" unitAccession=\"MS:1000131\" unitName=\"number of detector counts\"/>\n" +
+                "              <binary>%s</binary>\n" +
+                "            </binaryDataArray>\n" +
+                "          </binaryDataArrayList>\n" +
+                "        </spectrum>\n";
+
+        final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+        final String run_id = "JHU_LM_DIA_Pancreatic_2A6_02_Q1";
+        final int spectrumList_count = 3;
+//        final long spectrumList_count = 62783;
+        long char_count = 0;
+        final long[] index_spectrum_offset = new long[spectrumList_count];
+
+        final String head_xml = String.format(head_format_str, run_id, run_id, spectrumList_count);
+        sha1.update(head_xml.getBytes(StandardCharsets.US_ASCII));
+        char_count += head_xml.length();
+        xmloutput.write(head_xml);
+
+        for (int index = 0; index < spectrumList_count; index++) {
+            double pepmass = 1369.6091;
+            int charge = 2;
+            double rtinseconds = 883.04504;
+            String title = "JHU_LM_DIA_Pancreatic_2A6_02_Q1.1.1.2";
+
+            final float arr[] = new float[]{321.14865f,63.566483f,322.10638f,820.42725f,375.1666f,1048.1832f,384.18274f,861.8672f,389.11862f,468.88843f,399.15f,863.99207f,407.11713f,825.68097f,407.15817f,677.6008f,417.16754f,5614.1245f,418.17108f,1081.5725f,434.19608f,1034.5065f,526.25397f,1090.0287f,550.1648f,441.8385f,564.30554f,9128.785f,565.3082f,4949.8623f,565.837f,913.9365f,571.27576f,1115.7938f,573.7932f,1044.2639f,629.2097f,195.20604f,649.7834f,1047.2852f,660.87976f,1365.3114f,688.3395f,1115.2058f,710.2847f,1714.6174f,729.77875f,1320.233f,757.30536f,1321.803f,779.55774f,1390.2206f,789.5862f,1804.2131f,822.8162f,1305.4783f,841.5109f,1497.6519f,859.5157f,1454.1467f};
+            final int defaultArrayLength = arr.length / 2;
+            final float[] mzarr = new float[defaultArrayLength];
+            final float[] intensityarr = new float[defaultArrayLength];
+            for (int ii = 0; ii < arr.length / 2; ++ii) {
+                mzarr[ii] = arr[2 * ii];
+                intensityarr[ii] = arr[2 * ii + 1];
+            }
+            final ByteBuffer byteBuffermz = ByteBuffer.allocate(defaultArrayLength * Float.BYTES);
+            byteBuffermz.order(ByteOrder.LITTLE_ENDIAN);
+            for (final float e:mzarr)
+                byteBuffermz.putFloat(e);
+            final ByteBuffer byteBufferintensity = ByteBuffer.allocate(intensityarr.length * Float.BYTES);
+            byteBufferintensity.order(ByteOrder.LITTLE_ENDIAN);
+            for (final float e:intensityarr)
+                byteBufferintensity.putFloat(e);
+
+            final String base64_mz_array = Base64.getEncoder().encodeToString(byteBuffermz.array());
+            final String base64_intensity_array = Base64.getEncoder().encodeToString(byteBufferintensity.array());
+
+            float tic = 0;
+            for (final float e : intensityarr) tic += e;
+
+            Arrays.sort(mzarr);
+            Arrays.sort(intensityarr);
+
+            final String spectrum_xml = spectrum_indent + String.format(spectrum_format_str,
+                    index, index, defaultArrayLength,
+                    title,
+                    mzarr[0], mzarr[defaultArrayLength - 1],
+                    tic,
+                    intensityarr[0], intensityarr[defaultArrayLength - 1],
+                    rtinseconds, pepmass, charge,
+                    base64_mz_array.length(), base64_mz_array,
+                    base64_intensity_array.length(), base64_intensity_array);
+
+            index_spectrum_offset[index] = char_count + spectrum_indent.length();
+            sha1.update(spectrum_xml.getBytes(StandardCharsets.US_ASCII));
+            char_count += spectrum_xml.length();
+            xmloutput.write(spectrum_xml);
+        }
+        {
+            final String tmp1 = "      </spectrumList>\n" +
+                    "    </run>\n" +
+                    "  </mzML>\n"+
+                    "  ";
+            sha1.update(tmp1.getBytes(StandardCharsets.US_ASCII));
+            char_count += tmp1.length();
+            xmloutput.write(tmp1);
+        }
+        final long indexListOffset = char_count;
+        {
+            final String tmp2 = "<indexList count=\"2\">\n" +
+                    "    <index name=\"spectrum\">\n";
+            sha1.update(tmp2.getBytes(StandardCharsets.US_ASCII));
+            xmloutput.write(tmp2);
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        for (int index = 0; index < spectrumList_count; index++) {
+            final String offset_xml = String.format(" <offset idRef=\"index=%d\">%d</offset>\n",
+                    index, index_spectrum_offset[index]);
+            sb.append(offset_xml);
+        }
+        sb.append(String.format("    </index>\n" +
+                "    <index name=\"chromatogram\">\n" +
+                "    </index>\n" +
+                "  </indexList>\n" +
+                "  <indexListOffset>%d</indexListOffset>\n" +
+                "  <fileChecksum>", indexListOffset));
+
+        sha1.update(sb.toString().getBytes(StandardCharsets.US_ASCII));
+        sb.append(String.format("%s</fileChecksum>\n" +
+                        "</indexedmzML>\n", javax.xml.bind.DatatypeConverter.printHexBinary(sha1.digest())));
+        xmloutput.write(sb.toString());
+        xmloutput.close();
+        try {
+            final int numThreads = 10;
+            final int parsingTimeout = 4;
+            ScanCollectionDefault scans = new ScanCollectionDefault();
+            scans.setDefaultStorageStrategy(StorageStrategy.STRONG);
+            scans.isAutoloadSpectra(true);
+
+            final MZMLFile source = new MZMLFile(path);
+
+            source.setExcludeEmptyScans(true);
+            source.setNumThreadsForParsing(numThreads);
+            source.setParsingTimeout(parsingTimeout);
+            scans.setDataSource(source);
+
+            scans.loadData(LCMSDataSubset.WHOLE_RUN);
+            final TreeMap<Integer, IScan> num2scan = scans.getMapNum2scan();
+            System.out.println("num2scan = " + num2scan);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public static String to_mzXML(final String path) throws Exception {
         final int numThreads = 10;
         final int parsingTimeout = 4;
