@@ -40,6 +40,7 @@ import java.util.zip.Deflater;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.nustaq.serialization.FSTObjectInput;
@@ -69,15 +70,39 @@ public final class mzXMLParser  extends SpectrumParserBase{
 //        to_mzXML("/home/ci/DIA-U_batmass_io_test/JHU_LM_DIA_Pancreatic_2A6_02.mzML");
 
         try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML"), StandardCharsets.US_ASCII)) {
-            to_mzML("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML",
-                    bw);
+            to_mzML(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1.mgf"), bw);
+            test_to_mzML("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
 
     }
 
-    public static String to_mzML(final String path, final BufferedWriter xmloutput) throws IOException, java.security.NoSuchAlgorithmException {
+    public static void test_to_mzML(final String path) {
+        try {
+            final int numThreads = 10;
+            final int parsingTimeout = 4;
+            ScanCollectionDefault scans = new ScanCollectionDefault();
+            scans.setDefaultStorageStrategy(StorageStrategy.STRONG);
+            scans.isAutoloadSpectra(true);
+
+            final MZMLFile source = new MZMLFile(path);
+
+            source.setExcludeEmptyScans(true);
+            source.setNumThreadsForParsing(numThreads);
+            source.setParsingTimeout(parsingTimeout);
+            scans.setDataSource(source);
+
+            scans.loadData(LCMSDataSubset.WHOLE_RUN);
+            final TreeMap<Integer, IScan> num2scan = scans.getMapNum2scan();
+            System.out.println("num2scan = " + num2scan);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void to_mzML(final Path mgf, BufferedWriter xmloutput) throws IOException, java.security.NoSuchAlgorithmException {
         final String head_format_str = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
                 "<indexedmzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd\">\n" +
                 "  <mzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd\" id=\"%s\" version=\"1.1.0\">\n" +
@@ -157,9 +182,17 @@ public final class mzXMLParser  extends SpectrumParserBase{
                 "        </spectrum>\n";
 
         final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-        final String run_id = "JHU_LM_DIA_Pancreatic_2A6_02_Q1";
-        final int spectrumList_count = 3;
-//        final long spectrumList_count = 62783;
+        final String run_id0 = mgf.getFileName().toString();
+        final String run_id = run_id0.substring(0, run_id0.length() - 4);
+        final int spectrumList_count;
+        try (final BufferedReader br = Files.newBufferedReader(mgf)) {
+            int count = 0;
+            String line;
+            while ((line = br.readLine()) != null)
+                if (line.equals("BEGIN IONS"))
+                    ++count;
+            spectrumList_count = count;
+        }
         long char_count = 0;
         final long[] index_spectrum_offset = new long[spectrumList_count];
 
@@ -168,44 +201,51 @@ public final class mzXMLParser  extends SpectrumParserBase{
         char_count += head_xml.length();
         xmloutput.write(head_xml);
 
+        final BufferedReader br = Files.newBufferedReader(mgf);
+        String line;
+
         for (int index = 0; index < spectrumList_count; index++) {
-            double pepmass = 1369.6091;
-            int charge = 2;
-            double rtinseconds = 883.04504;
-            String title = "JHU_LM_DIA_Pancreatic_2A6_02_Q1.1.1.2";
 
-            final float arr[] = new float[]{321.14865f,63.566483f,322.10638f,820.42725f,375.1666f,1048.1832f,384.18274f,861.8672f,389.11862f,468.88843f,399.15f,863.99207f,407.11713f,825.68097f,407.15817f,677.6008f,417.16754f,5614.1245f,418.17108f,1081.5725f,434.19608f,1034.5065f,526.25397f,1090.0287f,550.1648f,441.8385f,564.30554f,9128.785f,565.3082f,4949.8623f,565.837f,913.9365f,571.27576f,1115.7938f,573.7932f,1044.2639f,629.2097f,195.20604f,649.7834f,1047.2852f,660.87976f,1365.3114f,688.3395f,1115.2058f,710.2847f,1714.6174f,729.77875f,1320.233f,757.30536f,1321.803f,779.55774f,1390.2206f,789.5862f,1804.2131f,822.8162f,1305.4783f,841.5109f,1497.6519f,859.5157f,1454.1467f};
-            final int defaultArrayLength = arr.length / 2;
-            final float[] mzarr = new float[defaultArrayLength];
-            final float[] intensityarr = new float[defaultArrayLength];
-            for (int ii = 0; ii < arr.length / 2; ++ii) {
-                mzarr[ii] = arr[2 * ii];
-                intensityarr[ii] = arr[2 * ii + 1];
+            double pepmass = Double.NaN;
+            int charge;
+            double rtinseconds;
+            String title;
+
+            line = br.readLine();
+            if (line == null)
+                break;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("PEPMASS")) {
+                    pepmass = Double.parseDouble(line.split("=")[1]);
+                    break;
+                }
             }
-            final ByteBuffer byteBuffermz = ByteBuffer.allocate(defaultArrayLength * Float.BYTES);
-            byteBuffermz.order(ByteOrder.LITTLE_ENDIAN);
-            for (final float e:mzarr)
-                byteBuffermz.putFloat(e);
-            final ByteBuffer byteBufferintensity = ByteBuffer.allocate(intensityarr.length * Float.BYTES);
-            byteBufferintensity.order(ByteOrder.LITTLE_ENDIAN);
-            for (final float e:intensityarr)
-                byteBufferintensity.putFloat(e);
+            charge = Integer.parseInt(br.readLine().split("[=+]")[1]);
+            rtinseconds = Double.parseDouble(br.readLine().split("=")[1]);
+            title = br.readLine().split("=")[1];
+            final FloatArrayList mzarr = new FloatArrayList();
+            final FloatArrayList intensityarr = new FloatArrayList();
+            while (!(line = br.readLine()).equals("END IONS")) {
+                final String[] mz_int = line.split(" ");
+                mzarr.add(Float.parseFloat(mz_int[0]));
+                intensityarr.add(Float.parseFloat(mz_int[1]));
+            }
+            final int defaultArrayLength = mzarr.size();
 
-            final String base64_mz_array = Base64.getEncoder().encodeToString(byteBuffermz.array());
-            final String base64_intensity_array = Base64.getEncoder().encodeToString(byteBufferintensity.array());
-
-            float tic = 0;
-            for (final float e : intensityarr) tic += e;
-
-            Arrays.sort(mzarr);
-            Arrays.sort(intensityarr);
+            final ByteBuffer bb = ByteBuffer.allocate(defaultArrayLength * Float.BYTES);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+            mzarr.forEach(bb::putFloat);
+            final String base64_mz_array = Base64.getEncoder().encodeToString(bb.array());
+            bb.clear();
+            intensityarr.forEach(bb::putFloat);
+            final String base64_intensity_array = Base64.getEncoder().encodeToString(bb.array());
 
             final String spectrum_xml = spectrum_indent + String.format(spectrum_format_str,
                     index, index, defaultArrayLength,
                     title,
-                    mzarr[0], mzarr[defaultArrayLength - 1],
-                    tic,
-                    intensityarr[0], intensityarr[defaultArrayLength - 1],
+                    mzarr.min(), mzarr.max(),
+                    intensityarr.sum(),
+                    mzarr.get(intensityarr.indexOf(intensityarr.max())), intensityarr.max(),
                     rtinseconds, pepmass, charge,
                     base64_mz_array.length(), base64_mz_array,
                     base64_intensity_array.length(), base64_intensity_array);
@@ -218,7 +258,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
         {
             final String tmp1 = "      </spectrumList>\n" +
                     "    </run>\n" +
-                    "  </mzML>\n"+
+                    "  </mzML>\n" +
                     "  ";
             sha1.update(tmp1.getBytes(StandardCharsets.US_ASCII));
             char_count += tmp1.length();
@@ -234,7 +274,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
 
         final StringBuilder sb = new StringBuilder();
         for (int index = 0; index < spectrumList_count; index++) {
-            final String offset_xml = String.format(" <offset idRef=\"index=%d\">%d</offset>\n",
+            final String offset_xml = String.format("      <offset idRef=\"index=%d\">%d</offset>\n",
                     index, index_spectrum_offset[index]);
             sb.append(offset_xml);
         }
@@ -247,31 +287,11 @@ public final class mzXMLParser  extends SpectrumParserBase{
 
         sha1.update(sb.toString().getBytes(StandardCharsets.US_ASCII));
         sb.append(String.format("%s</fileChecksum>\n" +
-                        "</indexedmzML>\n", javax.xml.bind.DatatypeConverter.printHexBinary(sha1.digest())));
+                        "</indexedmzML>\n",
+//                new String(org.apache.commons.codec.binary.Hex.encodeHex(sha1.digest()))));
+                javax.xml.bind.DatatypeConverter.printHexBinary(sha1.digest()).toLowerCase(Locale.ROOT)));
         xmloutput.write(sb.toString());
         xmloutput.close();
-        try {
-            final int numThreads = 10;
-            final int parsingTimeout = 4;
-            ScanCollectionDefault scans = new ScanCollectionDefault();
-            scans.setDefaultStorageStrategy(StorageStrategy.STRONG);
-            scans.isAutoloadSpectra(true);
-
-            final MZMLFile source = new MZMLFile(path);
-
-            source.setExcludeEmptyScans(true);
-            source.setNumThreadsForParsing(numThreads);
-            source.setParsingTimeout(parsingTimeout);
-            scans.setDataSource(source);
-
-            scans.loadData(LCMSDataSubset.WHOLE_RUN);
-            final TreeMap<Integer, IScan> num2scan = scans.getMapNum2scan();
-            System.out.println("num2scan = " + num2scan);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
     }
 
     public static String to_mzXML(final String path) throws Exception {

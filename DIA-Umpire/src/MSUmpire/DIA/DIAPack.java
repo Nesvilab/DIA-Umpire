@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -1031,6 +1032,7 @@ public class DIAPack {
         for(final BufferedWriter bw : DIAPack.file_handlers.values())
             bw.close();
         RenameMGF("");
+        convertMGF("");
     }
 
     private void RenameMGF(String tag) {
@@ -1050,6 +1052,41 @@ public class DIAPack {
         if (file.exists()) {
             file.renameTo(new File(file.getAbsolutePath().replace(".mgf.temp", tag + ".mgf")));
         }
+    }
+
+    private void convertMGF(String tag) throws java.security.NoSuchAlgorithmException, IOException {
+        String mgffile = FilenameUtils.getFullPath(Filename) + GetQ1Name() + tag + ".mgf";
+        String mgffile2 = FilenameUtils.getFullPath(Filename) + GetQ2Name() + tag + ".mgf";
+        String mgffile3 = FilenameUtils.getFullPath(Filename) + GetQ3Name() + tag + ".mgf";
+        {
+            final Path file = Paths.get(mgffile);
+            if (Files.exists(file)) {
+                final String fn = file.getFileName().toString();
+                try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
+                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
+                }
+            }
+        }
+        {
+            final Path file = Paths.get(mgffile2);
+            if (Files.exists(file)) {
+                final String fn = file.getFileName().toString();
+                try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
+                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
+                }
+            }
+        }
+        {
+            final Path file = Paths.get(mgffile3);
+            if (Files.exists(file)) {
+                final String fn = file.getFileName().toString();
+                try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
+                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
+                }
+            }
+        }
+
+
     }
 
     //Generate mass calibration model
