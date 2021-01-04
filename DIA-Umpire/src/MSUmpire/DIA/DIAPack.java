@@ -1062,7 +1062,7 @@ public class DIAPack {
             final Path file = Paths.get(mgffile);
             if (Files.exists(file)) {
                 final String fn = file.getFileName().toString();
-                try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
+                try (final BufferedWriter bw = Files.newBufferedWriter(file.getParent().resolve(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
                     MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
                 }
             }
@@ -1071,7 +1071,7 @@ public class DIAPack {
             final Path file = Paths.get(mgffile2);
             if (Files.exists(file)) {
                 final String fn = file.getFileName().toString();
-                try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
+                try (final BufferedWriter bw = Files.newBufferedWriter(file.getParent().resolve(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
                     MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
                 }
             }
@@ -1080,7 +1080,7 @@ public class DIAPack {
             final Path file = Paths.get(mgffile3);
             if (Files.exists(file)) {
                 final String fn = file.getFileName().toString();
-                try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
+                try (final BufferedWriter bw = Files.newBufferedWriter(file.getParent().resolve(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
                     MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
                 }
             }
