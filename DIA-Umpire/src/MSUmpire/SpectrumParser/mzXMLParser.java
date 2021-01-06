@@ -294,8 +294,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
         xmloutput.close();
     }
 
-    public static String to_mzXML(final String path) throws Exception {
-        final int numThreads = 10;
+    public static String to_mzXML(final String path, final int numThreads) throws Exception {
         final int parsingTimeout = 4;
         ScanCollectionDefault scans = new ScanCollectionDefault();
         scans.setDefaultStorageStrategy(StorageStrategy.STRONG);
@@ -380,9 +379,9 @@ public final class mzXMLParser  extends SpectrumParserBase{
                         precursor.getActivationInfo().getActivationMethod() == null ? "" : String.format(" activationMethod=\"%s\"", precursor.getActivationInfo().getActivationMethod()),
                         precursor.getCharge() == null ? "" : String.format(" precursorCharge=\"%d\"", precursor.getCharge()),
                         windowWideness == null ? "" : String.format(" windowWideness=\"%f\"", windowWideness),
-                        precursor.getMzTarget()));
+                        precursor.getMzTargetMono()));
             }
-            final ByteBuffer byteBuffer = ByteBuffer.allocate(spectrum.getMZs().length * 2 * 4);
+            final ByteBuffer byteBuffer = ByteBuffer.allocate(spectrum.getMZs().length * 2 * Float.BYTES);
             for (int i = 0; i < spectrum.getMZs().length; i++) {
                 byteBuffer.putInt(Float.floatToRawIntBits((float) spectrum.getMZs()[i]));
                 byteBuffer.putInt(Float.floatToRawIntBits((float) spectrum.getIntensities()[i]));

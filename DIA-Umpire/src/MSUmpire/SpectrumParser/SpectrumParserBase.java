@@ -81,7 +81,7 @@ public abstract class SpectrumParserBase {
             return new mzXMLParser(filename, parameter, datatype, dIA_Setting, NoCPUs);
         }
         else if (filename.toLowerCase().endsWith("mzml") || filename.toLowerCase().endsWith("raw"))
-            return new mzXMLParser(mzXMLParser.to_mzXML(filename),
+            return new mzXMLParser(mzXMLParser.to_mzXML(filename, NoCPUs),
                     parameter, datatype, dIA_Setting, NoCPUs);
         Logger.getRootLogger().error("The spectral lfile: "+filename +" is not supported.");
         return null;
