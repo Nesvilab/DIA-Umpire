@@ -45,7 +45,6 @@ sourceSets {
 
 dependencies {
     api project(':DIA-Umpire')
-    implementation 'commons-io:commons-io:2.8.0'
 }
 
 repositories {
