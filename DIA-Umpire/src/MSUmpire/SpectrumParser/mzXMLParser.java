@@ -35,6 +35,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 
 import org.apache.commons.io.FilenameUtils;
@@ -67,10 +68,15 @@ import umich.ms.msfiletoolbox.MsftbxInfo;
 public final class mzXMLParser  extends SpectrumParserBase{
     public static void main(final String[] args) throws Exception{
 //        to_mzXML("/home/ci/tmp/tkQE170512_U_ThermoFixed_DIA_01_Q3.mzXML");
-//        to_mzXML("/home/ci/DIA-U_batmass_io_test/JHU_LM_DIA_Pancreatic_2A6_02.mzML");
-
+        {
+            final long a = System.currentTimeMillis();
+            to_mzXML("/home/ci/DIA-U_batmass_io_test/JHU_LM_DIA_Pancreatic_2A6_02.mzML", 10);
+            System.out.println("time taken input to mzML:" + (System.currentTimeMillis() - a) / 1000. + "s");
+        }
         try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML"), StandardCharsets.US_ASCII)) {
+            final long a = System.currentTimeMillis();
             to_mzML(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1.mgf"), bw);
+            System.out.println("time taken mgf to mzML:"+(System.currentTimeMillis()-a)/1000.+"s");
             test_to_mzML("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -325,23 +331,17 @@ public final class mzXMLParser  extends SpectrumParserBase{
 
         scans.loadData(LCMSDataSubset.WHOLE_RUN);
         final TreeMap<Integer, IScan> num2scan = scans.getMapNum2scan();
-//        final StringBuilder sb_all = new StringBuilder();
         final Path ret = Paths.get(basename + ".mzXML");
         ret.toFile().deleteOnExit();
         final OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(ret, StandardOpenOption.CREATE_NEW), StandardCharsets.ISO_8859_1);
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+        writer.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
                 "<mzXML xmlns=\"http://sashimi.sourceforge.net/schema_revision/mzXML_3.2\"\n" +
                 "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                 "       xsi:schemaLocation=\"http://sashimi.sourceforge.net/schema_revision/mzXML_3.2 http://sashimi.sourceforge.net/schema_revision/mzXML_3.2/mzXML_idx_3.2.xsd\">\n" +
                 "  <msRun>\n");
-        writer.write(sb.toString());
-//        System.out.print(sb.toString());
-//        sb_all.append(sb);
-        sb.setLength(0);
-
-        int iii = 1;
-        for (final Map.Entry<Integer, IScan> entry : num2scan.entrySet()) {
+//        System.out.println("num2scan.size() = " + num2scan.size());
+        final Stream<String> stringStream = num2scan.entrySet().parallelStream().map(entry -> {
+            final StringBuilder sb = new StringBuilder();
             final IScan value = entry.getValue();
             final ISpectrum spectrum = value.getSpectrum();
             sb.append(String.format("    <scan num=\"%d\"\n" +
@@ -403,24 +403,18 @@ public final class mzXMLParser  extends SpectrumParserBase{
                     Base64.getEncoder().encodeToString(Arrays.copyOf(output, compressedDataLength))
             ));
             sb.append("    </scan>\n");
-
-            writer.write(sb.toString());
-//            System.out.print(sb.toString());
-//            sb_all.append(sb);
-            sb.setLength(0);
-
-//             if (++iii == 93) break;
-        }
-        sb.append("  </msRun>\n");
-        sb.append("</mzXML>");
-
-        writer.write(sb.toString());
-//        System.out.print(sb.toString());
-//        sb_all.append(sb);
-        sb.setLength(0);
-
+            return sb.toString();
+        });
+        stringStream.forEachOrdered(str -> {
+            try {
+                writer.write(str);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
+        writer.write("  </msRun>\n");
+        writer.write("</mzXML>");
         writer.close();
-//        System.out.println(sb_all.toString());
         return ret.toString();
     }
     public TreeMap<Integer, Long> ScanIndex=null;
