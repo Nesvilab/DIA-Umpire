@@ -1063,7 +1063,7 @@ public class DIAPack {
             if (Files.exists(file)) {
                 final String fn = file.getFileName().toString();
                 try (final BufferedWriter bw = Files.newBufferedWriter(file.getParent().resolve(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
-                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
+                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw, NoCPUs);
                 }
             }
         }
@@ -1072,7 +1072,7 @@ public class DIAPack {
             if (Files.exists(file)) {
                 final String fn = file.getFileName().toString();
                 try (final BufferedWriter bw = Files.newBufferedWriter(file.getParent().resolve(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
-                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
+                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw, NoCPUs);
                 }
             }
         }
@@ -1081,7 +1081,7 @@ public class DIAPack {
             if (Files.exists(file)) {
                 final String fn = file.getFileName().toString();
                 try (final BufferedWriter bw = Files.newBufferedWriter(file.getParent().resolve(fn.substring(0, fn.length() - 4) + ".mzML"), StandardCharsets.US_ASCII)) {
-                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw);
+                    MSUmpire.SpectrumParser.mzXMLParser.to_mzML(file, bw, NoCPUs);
                 }
             }
         }

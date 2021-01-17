@@ -75,7 +75,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
         }
         try (final BufferedWriter bw = Files.newBufferedWriter(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML"), StandardCharsets.US_ASCII)) {
             final long a = System.currentTimeMillis();
-            to_mzML(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1.mgf"), bw);
+            to_mzML(Paths.get("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1.mgf"), bw, 10);
             System.out.println("time taken mgf to mzML:"+(System.currentTimeMillis()-a)/1000.+"s");
             test_to_mzML("/home/ci/DIA-U_batmass_io_test/output/JHU_LM_DIA_Pancreatic_2A6_02_Q1_test.mzML");
         } catch (IOException e) {
@@ -108,7 +108,206 @@ public final class mzXMLParser  extends SpectrumParserBase{
         }
     }
 
-    public static void to_mzML(final Path mgf, BufferedWriter xmloutput) throws IOException, java.security.NoSuchAlgorithmException {
+    public static void to_mzML(final Path mgf, final BufferedWriter xmloutput, final int numThreads) throws IOException, java.security.NoSuchAlgorithmException {
+        final String head_format_str = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                "<indexedmzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd\">\n" +
+                "  <mzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd\" id=\"%s\" version=\"1.1.0\">\n" +
+                "    <cvList count=\"2\">\n" +
+                "      <cv id=\"MS\" fullName=\"Proteomics Standards Initiative Mass Spectrometry Ontology\" version=\"3.60.0\" URI=\"http://psidev.cvs.sourceforge.net/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo\"/>\n" +
+                "      <cv id=\"UO\" fullName=\"Unit Ontology\" version=\"12:10:2011\" URI=\"http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo\"/>\n" +
+                "    </cvList>\n" +
+                "    <fileDescription>\n" +
+                "      <fileContent>\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000580\" name=\"MSn spectrum\" value=\"\"/>\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000127\" name=\"centroid spectrum\" value=\"\"/>\n" +
+                "      </fileContent>\n" +
+                "    </fileDescription>\n" +
+                "    <softwareList count=\"1\">\n" +
+                "      <software id=\"pwiz_3.0.6002_x0020__x0028_TPP_x0020_v5.0.0_x0020_Typhoon_x002c__x0020_Build_x0020_201610181405-exported_x0020__x0028_Linux-x86_64_x0029__x0029_\" version=\"3.0.6002 (TPP v5.0.0 Typhoon, Build 201610181405-exported (Linux-x86_64))\">\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000615\" name=\"ProteoWizard software\" value=\"\"/>\n" +
+                "      </software>\n" +
+                "    </softwareList>\n" +
+                "    <instrumentConfigurationList count=\"1\">\n" +
+                "      <instrumentConfiguration id=\"IC\">\n" +
+                "        <cvParam cvRef=\"MS\" accession=\"MS:1000031\" name=\"instrument model\" value=\"\"/>\n" +
+                "      </instrumentConfiguration>\n" +
+                "    </instrumentConfigurationList>\n" +
+                "    <dataProcessingList count=\"1\">\n" +
+                "      <dataProcessing id=\"pwiz_Reader_conversion\">\n" +
+                "        <processingMethod order=\"0\" softwareRef=\"pwiz_3.0.6002_x0020__x0028_TPP_x0020_v5.0.0_x0020_Typhoon_x002c__x0020_Build_x0020_201610181405-exported_x0020__x0028_Linux-x86_64_x0029__x0029_\">\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000544\" name=\"Conversion to mzML\" value=\"\"/>\n" +
+                "        </processingMethod>\n" +
+                "      </dataProcessing>\n" +
+                "    </dataProcessingList>\n" +
+                "    <run id=\"%s\" defaultInstrumentConfigurationRef=\"IC\">\n" +
+                "      <spectrumList count=\"%d\" defaultDataProcessingRef=\"pwiz_Reader_conversion\">\n";
+        final String spectrum_indent = "        ";
+        final String spectrum_format_str = "<spectrum index=\"%d\" id=\"index=%d\" defaultArrayLength=\"%d\">\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000580\" name=\"MSn spectrum\" value=\"\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000511\" name=\"ms level\" value=\"2\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000127\" name=\"centroid spectrum\" value=\"\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000796\" name=\"spectrum title\" value=\"%s\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000130\" name=\"positive scan\" value=\"\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000528\" name=\"lowest observed m/z\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000527\" name=\"highest observed m/z\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000285\" name=\"total ion current\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000504\" name=\"base peak m/z\" value=\"%f\"/>\n" +
+                "          <cvParam cvRef=\"MS\" accession=\"MS:1000505\" name=\"base peak intensity\" value=\"%f\"/>\n" +
+                "          <scanList count=\"1\">\n" +
+                "            <cvParam cvRef=\"MS\" accession=\"MS:1000795\" name=\"no combination\" value=\"\"/>\n" +
+                "            <scan>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000016\" name=\"scan start time\" value=\"%f\" unitCvRef=\"UO\" unitAccession=\"UO:0000010\" unitName=\"second\"/>\n" +
+                "            </scan>\n" +
+                "          </scanList>\n" +
+                "          <precursorList count=\"1\">\n" +
+                "            <precursor>\n" +
+                "              <selectedIonList count=\"1\">\n" +
+                "                <selectedIon>\n" +
+                "                  <cvParam cvRef=\"MS\" accession=\"MS:1000744\" name=\"selected ion m/z\" value=\"%f\" unitCvRef=\"MS\" unitAccession=\"MS:1000040\" unitName=\"m/z\"/>\n" +
+                "                  <cvParam cvRef=\"MS\" accession=\"MS:1000041\" name=\"charge state\" value=\"%d\"/>\n" +
+                "                </selectedIon>\n" +
+                "              </selectedIonList>\n" +
+                "              <activation>\n" +
+                "              </activation>\n" +
+                "            </precursor>\n" +
+                "          </precursorList>\n" +
+                "          <binaryDataArrayList count=\"2\">\n" +
+                "            <binaryDataArray encodedLength=\"%d\">\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000521\" name=\"32-bit float\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000576\" name=\"no compression\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000514\" name=\"m/z array\" value=\"\" unitCvRef=\"MS\" unitAccession=\"MS:1000040\" unitName=\"m/z\"/>\n" +
+                "              <binary>%s</binary>\n" +
+                "            </binaryDataArray>\n" +
+                "            <binaryDataArray encodedLength=\"%d\">\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000521\" name=\"32-bit float\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000576\" name=\"no compression\" value=\"\"/>\n" +
+                "              <cvParam cvRef=\"MS\" accession=\"MS:1000515\" name=\"intensity array\" value=\"\" unitCvRef=\"MS\" unitAccession=\"MS:1000131\" unitName=\"number of detector counts\"/>\n" +
+                "              <binary>%s</binary>\n" +
+                "            </binaryDataArray>\n" +
+                "          </binaryDataArrayList>\n" +
+                "        </spectrum>\n";
+
+        final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+        final String run_id0 = mgf.getFileName().toString();
+        final String run_id = run_id0.substring(0, run_id0.length() - 4);
+        final List<Future<String>> futures = new ArrayList<>();
+        final ForkJoinPool fjp = new ForkJoinPool(numThreads);
+
+        try (final BufferedReader br = Files.newBufferedReader(mgf)) {
+            String line;
+            List<String> ions_entry = null;
+            while ((line = br.readLine()) != null) {
+                if (line.equals("BEGIN IONS")) {
+                    ions_entry = new ArrayList<>();
+                    line = br.readLine();
+                    if (line == null)
+                        break;
+                }
+                if (!line.equals("END IONS")) {
+                    if (ions_entry != null)
+                        ions_entry.add(line);
+                } else {
+                    final List<String> l = ions_entry;
+                    final int index = futures.size();
+                    futures.add(fjp.submit(()-> {
+                        final Iterator<String> i = l.iterator();
+                        final double pepmass = Double.parseDouble(i.next().split("=")[1]);
+                        final int charge = Integer.parseInt(i.next().split("[=+]")[1]);
+                        final double rtinseconds = Double.parseDouble(i.next().split("=")[1]);
+                        final String title = i.next().split("=")[1];
+                        final FloatArrayList mzarr = new FloatArrayList();
+                        final FloatArrayList intensityarr = new FloatArrayList();
+                        while(i.hasNext()){
+                            final String[] mz_int = i.next().split(" ");
+                            mzarr.add(Float.parseFloat(mz_int[0]));
+                            intensityarr.add(Float.parseFloat(mz_int[1]));
+                        }
+                        final int defaultArrayLength = mzarr.size();
+
+                        final ByteBuffer bb = ByteBuffer.allocate(defaultArrayLength * Float.BYTES);
+                        bb.order(ByteOrder.LITTLE_ENDIAN);
+                        mzarr.forEach(bb::putFloat);
+                        final String base64_mz_array = Base64.getEncoder().encodeToString(bb.array());
+                        bb.clear();
+                        intensityarr.forEach(bb::putFloat);
+                        final String base64_intensity_array = Base64.getEncoder().encodeToString(bb.array());
+
+                        final String spectrum_xml = spectrum_indent + String.format(spectrum_format_str,
+                                index, index, defaultArrayLength,
+                                title,
+                                mzarr.min(), mzarr.max(),
+                                intensityarr.sum(),
+                                mzarr.get(intensityarr.indexOf(intensityarr.max())), intensityarr.max(),
+                                rtinseconds, pepmass, charge,
+                                base64_mz_array.length(), base64_mz_array,
+                                base64_intensity_array.length(), base64_intensity_array);
+                        return spectrum_xml;
+                    }));
+                    ions_entry = null;
+                }
+            }
+        }
+
+        int char_count = 0;
+        final int spectrumList_count = futures.size();
+        final long[] index_spectrum_offset = new long[spectrumList_count];
+        final String head_xml = String.format(head_format_str, run_id, run_id, spectrumList_count);
+        sha1.update(head_xml.getBytes(StandardCharsets.US_ASCII));
+        char_count += head_xml.length();
+        xmloutput.write(head_xml);
+
+        for (int index = 0; index < futures.size(); ++index) {
+            final String spectrum_xml;
+            try {
+                spectrum_xml = futures.get(index).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+            index_spectrum_offset[index] = char_count + spectrum_indent.length();
+            sha1.update(spectrum_xml.getBytes(StandardCharsets.US_ASCII));
+            char_count += spectrum_xml.length();
+            xmloutput.write(spectrum_xml);
+        }
+        {
+            final String tmp1 = "      </spectrumList>\n" +
+                    "    </run>\n" +
+                    "  </mzML>\n" +
+                    "  ";
+            sha1.update(tmp1.getBytes(StandardCharsets.US_ASCII));
+            char_count += tmp1.length();
+            xmloutput.write(tmp1);
+        }
+        final long indexListOffset = char_count;
+        {
+            final String tmp2 = "<indexList count=\"2\">\n" +
+                    "    <index name=\"spectrum\">\n";
+            sha1.update(tmp2.getBytes(StandardCharsets.US_ASCII));
+            xmloutput.write(tmp2);
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        for (int index = 0; index < spectrumList_count; index++) {
+            final String offset_xml = String.format("      <offset idRef=\"index=%d\">%d</offset>\n",
+                    index, index_spectrum_offset[index]);
+            sb.append(offset_xml);
+        }
+        sb.append(String.format("    </index>\n" +
+                "    <index name=\"chromatogram\">\n" +
+                "    </index>\n" +
+                "  </indexList>\n" +
+                "  <indexListOffset>%d</indexListOffset>\n" +
+                "  <fileChecksum>", indexListOffset));
+
+        sha1.update(sb.toString().getBytes(StandardCharsets.US_ASCII));
+        sb.append(String.format("%s</fileChecksum>\n" +
+                        "</indexedmzML>\n",
+//                new String(org.apache.commons.codec.binary.Hex.encodeHex(sha1.digest()))));
+                javax.xml.bind.DatatypeConverter.printHexBinary(sha1.digest()).toLowerCase(Locale.ROOT)));
+        xmloutput.write(sb.toString());
+        xmloutput.close();
+    }
+
+    public static void to_mzML_sequential(final Path mgf, BufferedWriter xmloutput) throws IOException, java.security.NoSuchAlgorithmException {
         final String head_format_str = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
                 "<indexedmzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.2_idx.xsd\">\n" +
                 "  <mzML xmlns=\"http://psi.hupo.org/ms/mzml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd\" id=\"%s\" version=\"1.1.0\">\n" +
