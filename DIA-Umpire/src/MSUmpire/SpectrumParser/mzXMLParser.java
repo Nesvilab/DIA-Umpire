@@ -101,7 +101,8 @@ public final class mzXMLParser  extends SpectrumParserBase{
 
             scans.loadData(LCMSDataSubset.WHOLE_RUN);
             final TreeMap<Integer, IScan> num2scan = scans.getMapNum2scan();
-            System.out.println("num2scan = " + num2scan);
+            System.out.println("num2scan.size() = " + num2scan.size());
+//            System.out.println("num2scan = " + num2scan);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -210,19 +211,19 @@ public final class mzXMLParser  extends SpectrumParserBase{
                     final List<String> l = ions_entry;
                     final int index = futures.size();
                     futures.add(fjp.submit(()-> {
-                        final Iterator<String> i = l.iterator();
-                        final double pepmass = Double.parseDouble(i.next().split("=")[1]);
-                        final int charge = Integer.parseInt(i.next().split("[=+]")[1]);
-                        final double rtinseconds = Double.parseDouble(i.next().split("=")[1]);
-                        final String title = i.next().split("=")[1];
-                        final FloatArrayList mzarr = new FloatArrayList();
-                        final FloatArrayList intensityarr = new FloatArrayList();
-                        while(i.hasNext()){
-                            final String[] mz_int = i.next().split(" ");
+                        final ListIterator<String> li = l.listIterator();
+                        final double pepmass = Double.parseDouble(li.next().split("=")[1]);
+                        final int charge = Integer.parseInt(li.next().split("[=+]")[1]);
+                        final double rtinseconds = Double.parseDouble(li.next().split("=")[1]);
+                        final String title = li.next().split("=")[1];
+                        final int defaultArrayLength = l.size() - li.nextIndex();
+                        final FloatArrayList mzarr = new FloatArrayList(defaultArrayLength);
+                        final FloatArrayList intensityarr = new FloatArrayList(defaultArrayLength);
+                        while(li.hasNext()){
+                            final String[] mz_int = li.next().split(" ");
                             mzarr.add(Float.parseFloat(mz_int[0]));
                             intensityarr.add(Float.parseFloat(mz_int[1]));
                         }
-                        final int defaultArrayLength = mzarr.size();
 
                         final ByteBuffer bb = ByteBuffer.allocate(defaultArrayLength * Float.BYTES);
                         bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -231,13 +232,13 @@ public final class mzXMLParser  extends SpectrumParserBase{
                         bb.clear();
                         intensityarr.forEach(bb::putFloat);
                         final String base64_intensity_array = Base64.getEncoder().encodeToString(bb.array());
-
+                        final float base_peak_intensity = intensityarr.max();
                         final String spectrum_xml = spectrum_indent + String.format(spectrum_format_str,
                                 index, index, defaultArrayLength,
                                 title,
                                 mzarr.min(), mzarr.max(),
                                 intensityarr.sum(),
-                                mzarr.get(intensityarr.indexOf(intensityarr.max())), intensityarr.max(),
+                                mzarr.get(intensityarr.indexOf(base_peak_intensity)), base_peak_intensity,
                                 rtinseconds, pepmass, charge,
                                 base64_mz_array.length(), base64_mz_array,
                                 base64_intensity_array.length(), base64_intensity_array);
@@ -256,6 +257,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
         char_count += head_xml.length();
         xmloutput.write(head_xml);
 
+        if(!true)
         for (int index = 0; index < futures.size(); ++index) {
             final String spectrum_xml;
             try {
@@ -268,6 +270,39 @@ public final class mzXMLParser  extends SpectrumParserBase{
             char_count += spectrum_xml.length();
             xmloutput.write(spectrum_xml);
         }
+        final ForkJoinTask<?> fjt_write = fjp.submit(() -> {
+            for (final Future<String> future : futures) {
+                final String spectrum_xml;
+                try {
+                    spectrum_xml = future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    xmloutput.write(spectrum_xml);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        });
+        for (int index = 0; index < futures.size(); ++index) {
+            final String spectrum_xml;
+            try {
+                spectrum_xml = futures.get(index).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+            index_spectrum_offset[index] = char_count + spectrum_indent.length();
+            sha1.update(spectrum_xml.getBytes(StandardCharsets.US_ASCII));
+            char_count += spectrum_xml.length();
+        }
+
+        try {
+            fjt_write.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
         {
             final String tmp1 = "      </spectrumList>\n" +
                     "    </run>\n" +
