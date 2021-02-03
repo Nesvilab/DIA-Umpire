@@ -39,15 +39,15 @@ public class WaveletMassDetector implements Serializable{
      * Parameters of the wavelet, NPOINTS is the number of wavelet values to use
      * The WAVELET_ESL & WAVELET_ESL indicates the Effective Support boundaries
      */
-    private double NPOINTS;
-    private int WAVELET_ESL = -5;
-    private int WAVELET_ESR = 5;
+    private final double NPOINTS;
+    private final int WAVELET_ESL = -5;
+    private final int WAVELET_ESR = 5;
     static boolean waveletDebug = false;
-    private InstrumentParameter parameter;
+    private final InstrumentParameter parameter;
 //    public ArrayList<XYData> DataPoint;
     public final float[] DataPoint;
     double waveletWindow = 0.3;
-    private double[] MEXHAT;
+    private final double[] MEXHAT;
     double NPOINTS_half;
 
 //    public WaveletMassDetector(InstrumentParameter parameter, ArrayList<XYData> DataPoint, int NoPoints) {
@@ -199,7 +199,7 @@ public class WaveletMassDetector implements Serializable{
              */
             float intensity = 0f;
             for (int i = t1; i <= t2; i++) {
-                int ind = (int) (NPOINTS_half) + ((int) d * (i - dx) / scaleLevel);
+                int ind = (int) (NPOINTS_half) + (d * (i - dx) / scaleLevel);
                 if (ind < 0) {
                     ind = 0;
                 }
@@ -227,9 +227,9 @@ public class WaveletMassDetector implements Serializable{
     /**
      * This function calculates the wavelets's coefficients in Time domain
      *
-     * @param double x Step of the wavelet
-     * @param double a Window Width of the wavelet
-     * @param double b Offset from the center of the peak
+     * @param x Step of the wavelet
+     * @param window Window Width of the wavelet
+     * @param b Offset from the center of the peak
      */
     private double cwtMEXHATreal(double x, double window, double b) {
         /*
