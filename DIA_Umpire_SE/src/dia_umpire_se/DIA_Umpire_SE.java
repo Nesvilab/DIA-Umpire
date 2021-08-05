@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
@@ -51,6 +52,7 @@ public class DIA_Umpire_SE {
      * @param args the command line arguments DIA_Umpire parameterfile
      */
     public static void main(String[] args) throws InterruptedException, FileNotFoundException, ExecutionException, IOException, ParserConfigurationException, DataFormatException, SAXException, Exception {
+        Locale.setDefault(Locale.US);
         System.out.println("=================================================================================================");
         System.out.println("DIA-Umpire singal extraction analysis  (version: " + UmpireInfo.GetInstance().Version + ")");
         System.out.println("(c) University of Michigan");
