@@ -138,11 +138,14 @@ public class mzXMLReadUnit {
                     if ("inf".equals(value)) {
                         value = String.valueOf(Float.MAX_VALUE);
                     }
-                    scan.BasePeakMz = Float.parseFloat(value);
+                    if (!"null".contentEquals(value))
+                        scan.BasePeakMz = Float.parseFloat(value);
                     break;
                 }
                 case ("basePeakIntensity"):
-                    scan.BasePeakIntensity = Float.parseFloat(root.getAttributes().item(i).getNodeValue());
+                    final String value = root.getAttributes().item(i).getNodeValue();
+                    if (!"null".contentEquals(value))
+                        scan.BasePeakIntensity = Float.parseFloat(value);
                     break;
                 case ("totIonCurrent"):
                     scan.SetTotIonCurrent(Float.parseFloat(root.getAttributes().item(i).getNodeValue()));
