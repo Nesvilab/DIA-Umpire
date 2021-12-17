@@ -44,7 +44,10 @@ sourceSets {
 }
 
 dependencies {
-    api project(':DIA-Umpire')
+    implementation project(':DIA-Umpire')
+    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
 }
 
 repositories {
