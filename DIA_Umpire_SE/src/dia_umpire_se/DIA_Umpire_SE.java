@@ -53,7 +53,8 @@ public class DIA_Umpire_SE {
      */
     public static void main(String[] args) throws InterruptedException, FileNotFoundException, ExecutionException, IOException, ParserConfigurationException, DataFormatException, SAXException, Exception {
         Locale.setDefault(Locale.US);
-        org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll(); // for FST serialization to work an Java 16 and above
+        if (org.burningwave.core.assembler.StaticComponentContainer.Modules != null)
+            org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll(); // for FST serialization to work an Java 16 and above
         System.out.println("=================================================================================================");
         System.out.println("DIA-Umpire singal extraction analysis  (version: " + UmpireInfo.GetInstance().Version + ")");
         System.out.println("(c) University of Michigan");

@@ -58,7 +58,7 @@ repositories {
 
 shadowJar {
     archiveClassifier.set('')
-    minimize()
+//    minimize()
 }
 
 task printJarLocations {
