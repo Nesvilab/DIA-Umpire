@@ -325,7 +325,13 @@ public class PDHandlerBase {
         }
         assert ftemp.isEmpty();
         //System.out.print("PSM removed (PeakCurve generation):" + PSMRemoved );
+        fjp.shutdown();
 
+        try {
+            fjp.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            Logger.getRootLogger().info("interrupted..");
+        }
         int i = 1;
         //Assign peak curve index
         for (PeakCurve peakCurve : LCMSPeakBase.UnSortedPeakCurves) {
