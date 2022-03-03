@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 /**
@@ -67,7 +67,7 @@ public class MzXMLthreadUnit implements Runnable {
         try {
             Read();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
         
        scan.Preprocessing(parameter);

@@ -32,7 +32,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -57,15 +58,15 @@ public class ExportTable {
     }
 
     public void Export(int TopNPep, int TopNFrag, float Freq) throws IOException {
-        Logger.getRootLogger().info("Writing reports...............");
+        LogManager.getRootLogger().info("Writing reports...............");
 
         if (CombineProtID != null) {
             ProteinLevelExport(TopNPep, TopNFrag, Freq);
         } else {
             PeptideLevelExport(TopNPep, TopNFrag, Freq);
         }
-        Logger.getRootLogger().info("Job done");
-        Logger.getRootLogger().info("=================================================================================================");
+        LogManager.getRootLogger().info("Job done");
+        LogManager.getRootLogger().info("=================================================================================================");
     }
 
     private void ProteinLevelExport(int TopNPep, int TopNFrag, float Freq) throws IOException {
@@ -77,10 +78,10 @@ public class ExportTable {
         for (LCMSID IDsummary : FileList) {
             HashMap<String, FragmentPeak> FragMap = IDSummaryFragments.get(FilenameUtils.getBaseName(IDsummary.mzXMLFileName));
             if(FragMap==null){
-                Logger.getRootLogger().error("Cannot find fragment map for "+FilenameUtils.getBaseName(IDsummary.mzXMLFileName));
-                 Logger.getRootLogger().debug("Printing all fragment maps");
+                LogManager.getRootLogger().error("Cannot find fragment map for "+FilenameUtils.getBaseName(IDsummary.mzXMLFileName));
+                 LogManager.getRootLogger().debug("Printing all fragment maps");
                 for(String key : FragMap.keySet()){
-                    Logger.getRootLogger().debug(key);
+                    LogManager.getRootLogger().debug(key);
                 }
             }
             for (String key : CombineProtID.ProteinList.keySet()) {
@@ -370,7 +371,7 @@ public class ExportTable {
     }
 
     private void GetFragments(PepIonID pep, HashMap<String, FragmentPeak> FragMap) {
-        Logger.getRootLogger().info("MSUmpire.Utility.ExportTable.GetFragments()");
+        LogManager.getRootLogger().info("MSUmpire.Utility.ExportTable.GetFragments()");
         System.exit(123);// never executed
         for (FragmentPeak frag : pep.FragmentPeaks) {
             ProteinFragMap.putIfAbsent(pep.GetKey() + ";" + frag.IonType, frag.FragMZ);
@@ -382,7 +383,7 @@ public class ExportTable {
     }
 
     public void ExportPep() throws IOException {
-        Logger.getRootLogger().info("Writing reports...............");
+        LogManager.getRootLogger().info("Writing reports...............");
         FileWriter pepWriter = new FileWriter(WorkFolder + "PeptideSummary_" + DateTimeTag.GetTag() + ".xls");
 
         ////PepSummary///////////////////////////////////
@@ -438,7 +439,7 @@ public class ExportTable {
         }
         pepWriter.close();
 
-        Logger.getRootLogger().info("Job done");
-        Logger.getRootLogger().info("=================================================================================================");
+        LogManager.getRootLogger().info("Job done");
+        LogManager.getRootLogger().info("=================================================================================================");
     }
 }

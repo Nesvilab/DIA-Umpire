@@ -27,7 +27,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -105,14 +105,14 @@ public class InstrumentParameter implements Serializable{
     
     public void WriteParamSerialization(String mzXMLFileName) {
         try {
-            Logger.getRootLogger().info("Writing parameter to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_params.ser...");
+            LogManager.getRootLogger().info("Writing parameter to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_params.ser...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_params.ser", false);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(this);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -121,7 +121,7 @@ public class InstrumentParameter implements Serializable{
             return null;
         }
         try {
-            Logger.getRootLogger().info("Reading parameters from file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + "_params.ser...");
+            LogManager.getRootLogger().info("Reading parameters from file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + "_params.ser...");
 
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + "_params.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -131,7 +131,7 @@ public class InstrumentParameter implements Serializable{
             return params;
 
         } catch (Exception ex) {
-             Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+             LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;
         }
     }

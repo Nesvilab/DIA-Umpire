@@ -37,7 +37,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Peak detection processing class for DIA MS2 peak
@@ -102,7 +104,7 @@ public class PDHandlerDIAMS2 extends PDHandlerBase {
 
     private void PrecursorFragmentPairBuildingForUnfragmentedIon() throws SQLException, IOException {
         //System.out.print("Using multithreading now: " + NoCPUs + " processors\n");
-        Logger.getRootLogger().info("Building precursor-fragment pairs for unfragmented ions....");
+        LogManager.getRootLogger().info("Building precursor-fragment pairs for unfragmented ions....");
         final ForkJoinPool executorPool = new ForkJoinPool(NoCPUs);
         final ArrayList<Future<CorrCalcCluster2CurveUnit>> ftemp = new ArrayList<>();
 //        ArrayList<CorrCalcCluster2CurveUnit> UnfragmentedIonPairList = new ArrayList<>();
@@ -139,7 +141,7 @@ public class PDHandlerDIAMS2 extends PDHandlerBase {
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
 
 //        LCMSPeakBase__.UnFragIonClu2Cur = new HashMap<>();
@@ -158,7 +160,7 @@ public class PDHandlerDIAMS2 extends PDHandlerBase {
 
     private void PrecursorFragmentPairBuildingForMS1() throws SQLException, IOException {
         //System.out.print("Using multithreading now: " + NoCPUs + " processors\n");
-        Logger.getRootLogger().info("Building precursor-fragment pairs for MS1 features....");
+        LogManager.getRootLogger().info("Building precursor-fragment pairs for MS1 features....");
         final ForkJoinPool executorPool = new ForkJoinPool(NoCPUs);
 //        ArrayList<CorrCalcCluster2CurveUnit> PrecursorPairList = new ArrayList<>();
         final ArrayList<Future<CorrCalcCluster2CurveUnit>> ftemp = new ArrayList<>();
@@ -194,7 +196,7 @@ public class PDHandlerDIAMS2 extends PDHandlerBase {
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
 
 //        ((LCMSPeakDIAMS2) LCMSPeakBase).FragmentsClu2Cur = new HashMap<>();

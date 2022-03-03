@@ -21,7 +21,9 @@ package MSUmpire.Utility;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -42,11 +44,11 @@ public class PrintThread extends Thread{
                     new InputStreamReader(process.getInputStream()));
             String line = null;
             while ((line = reader.readLine()) != null) {                
-                Logger.getRootLogger().debug(line);
+                LogManager.getRootLogger().debug(line);
             }
             reader.close();
         } catch (final Exception e) {
-            Logger.getRootLogger().debug(e.getMessage());
+            LogManager.getRootLogger().debug(e.getMessage());
         }        
     }
 }

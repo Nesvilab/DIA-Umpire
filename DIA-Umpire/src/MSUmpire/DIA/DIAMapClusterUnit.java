@@ -27,7 +27,7 @@ import MSUmpire.PeakDataStructure.PeakCluster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Thread unit for assigning MS1 peak cluster and matched MS2 fragment peak for identified peptide ion
@@ -63,8 +63,8 @@ public class DIAMapClusterUnit implements Runnable{
             int ClusterIndex = -1;
             if (psm.GetRawNameString() == null ? Q1Name == null : psm.GetRawNameString().equals(FilenameUtils.getBaseName(Q1Name))) {
                 if(!ScanClusterMap_Q1.containsKey(psm.ScanNo)){
-                   Logger.getRootLogger().error("ScanClusterMapping error");
-                   Logger.getRootLogger().error("ScanClusterMapping "+Q1Name+" doesn't have "+ psm.SpecNumber);
+                   LogManager.getRootLogger().error("ScanClusterMapping error");
+                   LogManager.getRootLogger().error("ScanClusterMapping "+Q1Name+" doesn't have "+ psm.SpecNumber);
                     System.exit(3);
                 }
                 //Get cluster index fro Q1
@@ -76,8 +76,8 @@ public class DIAMapClusterUnit implements Runnable{
                 }
             } else if (psm.GetRawNameString() == null ? Q2Name == null : psm.GetRawNameString().equals(FilenameUtils.getBaseName(Q2Name))) {
                 if(!ScanClusterMap_Q2.containsKey(psm.ScanNo)){
-                    Logger.getRootLogger().error("ScanClusterMapping error");
-                    Logger.getRootLogger().error("ScanClusterMapping "+Q2Name+" doesn't have "+ psm.SpecNumber);
+                    LogManager.getRootLogger().error("ScanClusterMapping error");
+                    LogManager.getRootLogger().error("ScanClusterMapping "+Q2Name+" doesn't have "+ psm.SpecNumber);
                     System.exit(3);
                 }
                 
@@ -91,8 +91,8 @@ public class DIAMapClusterUnit implements Runnable{
              } else if (psm.GetRawNameString() == null ? Q3Name == null : psm.GetRawNameString().equals(FilenameUtils.getBaseName(Q3Name))) {
                  String WindowClusterIndex = ScanClusterMap_Q3.get(psm.ScanNo);
                  if(!ScanClusterMap_Q3.containsKey(psm.ScanNo)){
-                    Logger.getRootLogger().error("ScanClusterMapping error");
-                    Logger.getRootLogger().error("ScanClusterMapping "+Q3Name+" doesn't have "+ psm.SpecNumber);
+                    LogManager.getRootLogger().error("ScanClusterMapping error");
+                    LogManager.getRootLogger().error("ScanClusterMapping "+Q3Name+" doesn't have "+ psm.SpecNumber);
                     System.exit(3);
                 }
                  if (WindowClusterIndex.split(";").length == 2) {
@@ -133,7 +133,7 @@ public class DIAMapClusterUnit implements Runnable{
         }       
          
          if(pepIonID.MS1PeakClusters.isEmpty() && pepIonID.MS2UnfragPeakClusters.isEmpty()){
-             Logger.getRootLogger().trace("Cannot find feature for identified peptide ion : "+pepIonID.GetKey()+" mz: "+pepIonID.ObservedMz+" in isolation window "+DIAWindow.WindowID);
+             LogManager.getRootLogger().trace("Cannot find feature for identified peptide ion : "+pepIonID.GetKey()+" mz: "+pepIonID.ObservedMz+" in isolation window "+DIAWindow.WindowID);
          }
     }
 

@@ -102,7 +102,7 @@ public class ShuffledSeqGen implements Runnable{
         try {
             Generate();
         } catch (MatrixLoaderException ex) {
-            org.apache.log4j.Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            org.apache.logging.log4j.LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 }

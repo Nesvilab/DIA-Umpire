@@ -43,7 +43,8 @@ import java.util.Vector;
 import javastat.multivariate.DiscriminantAnalysis;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -93,7 +94,7 @@ public class TargetMatchScoring implements Serializable {
         if (Terminate) {
             return;
         }
-        Logger.getRootLogger().info("Removing low probability (<0.2) hits: total target entries: " + libTargetMatches.size());
+        LogManager.getRootLogger().info("Removing low probability (<0.2) hits: total target entries: " + libTargetMatches.size());
         ArrayList<UmpireSpecLibMatch> newlist = new ArrayList<>();
         for (UmpireSpecLibMatch match : libTargetMatches) {
             if ((match.BestDecoyHit != null && match.BestDecoyHit.MixtureModelLocalProb > 0.2) || (match.BestHit != null && match.BestHit.MixtureModelLocalProb > 0.2)) {
@@ -101,7 +102,7 @@ public class TargetMatchScoring implements Serializable {
             }
         }
         libTargetMatches = newlist;
-        Logger.getRootLogger().info("Remaining entries: " + libTargetMatches.size());
+        LogManager.getRootLogger().info("Remaining entries: " + libTargetMatches.size());
         decoyModelingList.clear();
     }
 
@@ -210,12 +211,12 @@ public class TargetMatchScoring implements Serializable {
             }
             writer.close();
         } catch (Exception e) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(e));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(e));
         }
     }
 
     private void CalcUmpireScore() {
-        Logger.getRootLogger().debug("Calculating Umpire Scores");
+        LogManager.getRootLogger().debug("Calculating Umpire Scores");
         for (UmpireSpecLibMatch match : libTargetMatches) {
             for (PeakGroupScore target : match.TargetHits) {
                 AssignUmpireScore(target);
@@ -249,7 +250,7 @@ public class TargetMatchScoring implements Serializable {
 
     private void EM_LDATraining() throws IOException {
 
-        Logger.getRootLogger().info("Linear discriminant analysis using identified peptides and decoys as training set.");
+        LogManager.getRootLogger().info("Linear discriminant analysis using identified peptides and decoys as training set.");
         Regression regression = new Regression();
         XYPointCollection points = new XYPointCollection();
         matchSubscore.InitializeLDACoeff();
@@ -293,11 +294,11 @@ public class TargetMatchScoring implements Serializable {
         int targetNo = (int) (IDList.size() * samplingratio);
         int TrainNo = Math.min(targetNo, decoyList.size());
 
-        Logger.getRootLogger().info("No. of identified peptide ions:"+IDList.size());
-        Logger.getRootLogger().info("No. of decoys:"+decoyList.size());
+        LogManager.getRootLogger().info("No. of identified peptide ions:"+IDList.size());
+        LogManager.getRootLogger().info("No. of decoys:"+decoyList.size());
         if (TrainNo < 5) {
             Terminate = true;
-            Logger.getRootLogger().warn("No. of training data is less than 5, the training process will exit.");
+            LogManager.getRootLogger().warn("No. of training data is less than 5, the training process will exit.");
             return;
         }
       
@@ -341,7 +342,7 @@ public class TargetMatchScoring implements Serializable {
             }
 
             if (!modelvalid) {
-                Logger.getRootLogger().debug("LDA failed at iteration:" + iteration);
+                LogManager.getRootLogger().debug("LDA failed at iteration:" + iteration);
                 break;
             }
             regression.SetData(points);
@@ -352,16 +353,16 @@ public class TargetMatchScoring implements Serializable {
             }
 
             DecimalFormat df = new DecimalFormat("#.####");
-            Logger.getRootLogger().debug("----------------------------------------------------------------------------------------");
-            Logger.getRootLogger().debug("Iteration:" + (iteration++));
-            Logger.getRootLogger().debug("No of target hits:" + targetNo);
-            Logger.getRootLogger().debug("No of decoy hits:" + decoyList.size());
-            Logger.getRootLogger().debug("Training set size:" + TrainNo * 2);
-            Logger.getRootLogger().debug("Trained weights:");
+            LogManager.getRootLogger().debug("----------------------------------------------------------------------------------------");
+            LogManager.getRootLogger().debug("Iteration:" + (iteration++));
+            LogManager.getRootLogger().debug("No of target hits:" + targetNo);
+            LogManager.getRootLogger().debug("No of decoy hits:" + decoyList.size());
+            LogManager.getRootLogger().debug("Training set size:" + TrainNo * 2);
+            LogManager.getRootLogger().debug("Trained weights:");
             for (int i = 0; i < NoLDAComp; i++) {
-                Logger.getRootLogger().debug(matchSubscore.SubSName[i] + ":" + df.format(matchSubscore.SubSCoeff[i]));
+                LogManager.getRootLogger().debug(matchSubscore.SubSName[i] + ":" + df.format(matchSubscore.SubSCoeff[i]));
             }
-            Logger.getRootLogger().debug("LDA weight similarity to previous iteration:" + df.format(LDASimialrity));
+            LogManager.getRootLogger().debug("LDA weight similarity to previous iteration:" + df.format(LDASimialrity));
 
             CalcUmpireScore();
         }
@@ -372,7 +373,7 @@ public class TargetMatchScoring implements Serializable {
         if (libTargetMatches.isEmpty() || Terminate) {
             return;
         }
-        Logger.getRootLogger().info("Semi-parametric mixture modeling");
+        LogManager.getRootLogger().info("Semi-parametric mixture modeling");
         int IDNo = 0;
         int decoyNo = 0;
         int modelNo = 0;
@@ -492,13 +493,13 @@ public class TargetMatchScoring implements Serializable {
         MixtureModel mm = ExpectationMaximization1D.initialize(clusters);
         mmc = ExpectationMaximization1D.run(points, mm);
         DecimalFormat df = new DecimalFormat("#.####");
-        Logger.getRootLogger().debug("----------------------------------------------------------------------------------------");
-        Logger.getRootLogger().debug("No. of modeling points=" + modelNo);
-        Logger.getRootLogger().debug("ID hits mean=" + df.format(IDmean));
-        Logger.getRootLogger().debug("Decoy hits mean=" + df.format(Decoymean));
+        LogManager.getRootLogger().debug("----------------------------------------------------------------------------------------");
+        LogManager.getRootLogger().debug("No. of modeling points=" + modelNo);
+        LogManager.getRootLogger().debug("ID hits mean=" + df.format(IDmean));
+        LogManager.getRootLogger().debug("Decoy hits mean=" + df.format(Decoymean));
         //System.out.print("T-test: p-value=" + df.format(model.ttest.pValue).toString() + "\n");
-        Logger.getRootLogger().debug("Incorrect hits model mean=" + df.format(((PVector) mmc.param[0]).array[0]) + " variance=" + df.format(((PVector) mmc.param[0]).array[1]) + " weight=" + df.format(mmc.weight[0]));
-        Logger.getRootLogger().debug("Correct hits model mean=" + df.format(((PVector) mmc.param[1]).array[0]) + " variance=" + df.format(((PVector) mmc.param[1]).array[1]) + " weight=" + df.format(mmc.weight[1]));
+        LogManager.getRootLogger().debug("Incorrect hits model mean=" + df.format(((PVector) mmc.param[0]).array[0]) + " variance=" + df.format(((PVector) mmc.param[0]).array[1]) + " weight=" + df.format(mmc.weight[0]));
+        LogManager.getRootLogger().debug("Correct hits model mean=" + df.format(((PVector) mmc.param[1]).array[0]) + " variance=" + df.format(((PVector) mmc.param[1]).array[1]) + " weight=" + df.format(mmc.weight[1]));
 
         if (((PVector) mmc.param[0]).array[0] > ((PVector) mmc.param[1]).array[0]) {
             return;
@@ -702,14 +703,14 @@ public class TargetMatchScoring implements Serializable {
         }
         TargetMatchScoring match = null;
         try {
-            Logger.getRootLogger().info("Loading Target library match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.serFS...");
+            LogManager.getRootLogger().info("Loading Target library match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.serFS...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.serFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             match = (TargetMatchScoring) in.readObject();
             in.close();
             fileIn.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;
         }
         return match;
@@ -722,14 +723,14 @@ public class TargetMatchScoring implements Serializable {
         }
         TargetMatchScoring match = null;
         try {
-            Logger.getRootLogger().info("Loading Target library match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.ser...");
+            LogManager.getRootLogger().info("Loading Target library match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.ser...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             match = (TargetMatchScoring) in.readObject();
             in.close();
             fileIn.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;
         }
         return match;
@@ -737,14 +738,14 @@ public class TargetMatchScoring implements Serializable {
 
     public boolean LibraryMatchWriteJS() throws FileNotFoundException {
         try {
-            Logger.getRootLogger().info("Writing Target match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.ser...");
+            LogManager.getRootLogger().info("Writing Target match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.ser...");
             FileOutputStream fout2 = new FileOutputStream(FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.ser", false);
             ObjectOutputStream oos = new ObjectOutputStream(fout2);
             oos.writeObject(this);
             oos.close();
             fout2.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;
@@ -752,14 +753,14 @@ public class TargetMatchScoring implements Serializable {
 
     public boolean LibraryMatchWrite() throws FileNotFoundException {
         try {
-            Logger.getRootLogger().info("Writing Target match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.serFS...");
+            LogManager.getRootLogger().info("Writing Target match results to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.serFS...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename) + "_" + LibID + "_LibMatch.serFS", false);
             FSTObjectOutput out = new FSTObjectOutput(fout);
             out.writeObject(this);
             out.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;

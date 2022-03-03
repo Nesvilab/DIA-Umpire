@@ -31,7 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -77,8 +77,8 @@ public class mzXMLReadUnit {
         try {
             doc = docBuilder.parse(input);
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
-            Logger.getRootLogger().error(XMLtext);
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(XMLtext);
         }
         Node root = doc.getFirstChild();
         for (int i = 0; i < root.getAttributes().getLength(); i++) {

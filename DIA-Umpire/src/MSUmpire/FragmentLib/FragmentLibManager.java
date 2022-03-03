@@ -51,7 +51,8 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ExternalPackages.org.hupo.psi.ms.traml.CvParamType;
 import ExternalPackages.org.hupo.psi.ms.traml.ModificationType;
 import ExternalPackages.org.hupo.psi.ms.traml.PeptideType;
@@ -98,14 +99,14 @@ public class FragmentLibManager implements Serializable {
 
     private void FSFragmentLibWrite(String path, String LibID1) {
         try {
-            Logger.getRootLogger().info("Writing FragmentLib to file:" + path + LibID1 + ".serFS...");
+            LogManager.getRootLogger().info("Writing FragmentLib to file:" + path + LibID1 + ".serFS...");
             FileOutputStream fout = new FileOutputStream(path + LibID1 + ".serFS", false);
             FSTObjectOutput oos = new FSTObjectOutput(fout);
             oos.writeObject(this);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -125,11 +126,11 @@ public class FragmentLibManager implements Serializable {
 
     private static FragmentLibManager FSFragmentLibRead(String path, String LibID1) {
         if (!new File(path + LibID1 + ".serFS").exists()) {
-            Logger.getRootLogger().debug(path + LibID1 + ".serFS does not exsit.");
+            LogManager.getRootLogger().debug(path + LibID1 + ".serFS does not exsit.");
             return null;
         }
         try {
-            Logger.getRootLogger().info("Reading spectral library from file:" + path + LibID1 + ".serFS...");
+            LogManager.getRootLogger().info("Reading spectral library from file:" + path + LibID1 + ".serFS...");
             FileInputStream fileIn = new FileInputStream(path + LibID1 + ".serFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             FragmentLibManager FragLib = (FragmentLibManager) in.readObject();
@@ -137,18 +138,18 @@ public class FragmentLibManager implements Serializable {
             fileIn.close();            
             return FragLib;
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;
         }
     }
     
     private static FragmentLibManager FSFragmentLibRead_Old(String path, String LibID1) {
         if (!new File(path + LibID1 + ".serFS").exists()) {
-            Logger.getRootLogger().debug(path + LibID1 + ".serFS does not exsit.");
+            LogManager.getRootLogger().debug(path + LibID1 + ".serFS does not exsit.");
             return null;
         }
         try {
-            Logger.getRootLogger().info("Reading internal spectral library from file:" + path + LibID1 + ".serFS...");
+            LogManager.getRootLogger().info("Reading internal spectral library from file:" + path + LibID1 + ".serFS...");
             FileInputStream fileIn = new FileInputStream(path + LibID1 + ".serFS");
             org.nustaq.serialization.FSTObjectInput in = new org.nustaq.serialization.FSTObjectInput(fileIn);
             FragmentLibManager FragLib = (FragmentLibManager) in.readObject();
@@ -156,7 +157,7 @@ public class FragmentLibManager implements Serializable {
             fileIn.close();
             return FragLib;
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;
         }
     }
@@ -224,7 +225,7 @@ public class FragmentLibManager implements Serializable {
     }
     
     public void GenerateDecoyLib() throws MatrixLoaderException {
-        Logger.getRootLogger().info("generating decoy spectra");       
+        LogManager.getRootLogger().info("generating decoy spectra");       
         PeptideDecoyFragmentLib = new HashMap<>();
         Matrix blosum62=MatrixLoader.load("BLOSUM62");                
         for (PepFragmentLib fragmentLib : PeptideFragmentLib.values()) {            
@@ -267,7 +268,7 @@ public class FragmentLibManager implements Serializable {
     }
         
     public void ImportFragLibByTSV(String tsv) throws IOException, MatrixLoaderException {
-        Logger.getRootLogger().info("Parsing " + tsv);
+        LogManager.getRootLogger().info("Parsing " + tsv);
         BufferedReader reader=new BufferedReader(new FileReader(tsv));
         PTMManager.GetInstance();
         String line="";
@@ -340,7 +341,7 @@ public class FragmentLibManager implements Serializable {
                 if (fraglib != null && FragmentPeaks != null) {
                     fraglib.AddFragments(FragmentPeaks);                    
                     if (PeptideFragmentLib.containsKey(fraglib.GetKey())) {
-                        Logger.getRootLogger().warn("Peptide ion :" + fraglib.GetKey() + " is already in the library.("+lastpep+")");                        
+                        LogManager.getRootLogger().warn("Peptide ion :" + fraglib.GetKey() + " is already in the library.("+lastpep+")");                        
                     } else {
                         PeptideFragmentLib.put(fraglib.GetKey(), fraglib);
                     }
@@ -415,7 +416,7 @@ public class FragmentLibManager implements Serializable {
                         fraglib.ModSequence = ModStringConvert.AddModIntoSeqBeforeSite(fraglib.ModSequence, mapmod.GetKey(), idx-1);
                     }
                     else{
-                        Logger.getRootLogger().error("modification is not recognized:"+modseq);
+                        LogManager.getRootLogger().error("modification is not recognized:"+modseq);
                         System.exit(1);
                     }
                 }
@@ -432,20 +433,20 @@ public class FragmentLibManager implements Serializable {
         if (fraglib != null && FragmentPeaks != null) {
             fraglib.AddFragments(FragmentPeaks);
             if (PeptideFragmentLib.containsKey(fraglib.GetKey())) {
-                Logger.getRootLogger().warn("Peptide ion :" + fraglib.GetKey() + " is already in the library.");
+                LogManager.getRootLogger().warn("Peptide ion :" + fraglib.GetKey() + " is already in the library.");
             } else {
                 PeptideFragmentLib.put(fraglib.GetKey(), fraglib);
             }
         }
-        Logger.getRootLogger().info("No. of peptide ions in the imported library:"+PeptideFragmentLib.size());
+        LogManager.getRootLogger().info("No. of peptide ions in the imported library:"+PeptideFragmentLib.size());
         CheckDecoys();
     }
 
     public void ImportFragLibByTraML(String tramlpath, String DecoyPrefix) throws Exception {
-        Logger.getRootLogger().info("Parsing " + tramlpath);
+        LogManager.getRootLogger().info("Parsing " + tramlpath);
         try {
             TraMLParser traMLParser = new TraMLParser();
-            traMLParser.parse_file(tramlpath, Logger.getRootLogger());
+            traMLParser.parse_file(tramlpath, LogManager.getRootLogger());
             PTMManager.GetInstance();
             HashMap<String, PepFragmentLib> TraMLMap = new HashMap<>();
             HashMap<String, PepFragmentLib> Decoys=new HashMap<>();
@@ -481,7 +482,7 @@ public class FragmentLibManager implements Serializable {
                         }
                         modinfo.modification = PTMManager.GetInstance().GetPTM(modinfo.site, mod.getMonoisotopicMassDelta().floatValue());
                         if(modinfo.modification==null){
-                            Logger.getRootLogger().error("Modification was not found in the library: site:"+modinfo.site+", massdiff="+mod.getMonoisotopicMassDelta().floatValue());
+                            LogManager.getRootLogger().error("Modification was not found in the library: site:"+modinfo.site+", massdiff="+mod.getMonoisotopicMassDelta().floatValue());
                             //System.exit(1);
                         }
                         modinfo.massdiff = (float) modinfo.modification.getMass();
@@ -545,15 +546,15 @@ public class FragmentLibManager implements Serializable {
                 fraglib.PrecursorMz = PrecursorMZList.get(pepid);
                 fraglib.AddFragments(TransitionList.get(pepid));
             }
-            Logger.getRootLogger().info("No. of peptide ions in the imported library:"+PeptideFragmentLib.size());
-            Logger.getRootLogger().info("No. of decoys in the imported library:"+PeptideDecoyFragmentLib.size());
+            LogManager.getRootLogger().info("No. of peptide ions in the imported library:"+PeptideFragmentLib.size());
+            LogManager.getRootLogger().info("No. of decoys in the imported library:"+PeptideDecoyFragmentLib.size());
         } catch (MatrixLoaderException ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
     public void ImportFragLibBySPTXT(String sptxtpath) throws IOException {
-        Logger.getRootLogger().info("Parsing " + sptxtpath);
+        LogManager.getRootLogger().info("Parsing " + sptxtpath);
         try {
             BufferedReader reader=new BufferedReader(new FileReader(sptxtpath));
             
@@ -619,10 +620,10 @@ public class FragmentLibManager implements Serializable {
                     PeptideFragmentLib.put(fraglib.GetKey(), fraglib);
                 }
             }
-            Logger.getRootLogger().info("No. of peptide ions in the imported library:"+PeptideFragmentLib.size());       
+            LogManager.getRootLogger().info("No. of peptide ions in the imported library:"+PeptideFragmentLib.size());       
             GenerateDecoyLib();
         } catch (MatrixLoaderException ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -670,17 +671,17 @@ public class FragmentLibManager implements Serializable {
                         PeptideFragmentLib.get(pepIonID.GetKey()).AddFragments(frags);
                     }
                     else{
-                        Logger.getRootLogger().warn("Skipped peptide ion: " + pepIonID.GetKey() + " because it does not have enough matched fragments from file: " + lcmsid.mzXMLFileName);
+                        LogManager.getRootLogger().warn("Skipped peptide ion: " + pepIonID.GetKey() + " because it does not have enough matched fragments from file: " + lcmsid.mzXMLFileName);
                     }                    
                 } else {
-                    Logger.getRootLogger().warn("Skipped peptide ion: " + pepIonID.GetKey() + " because it does not have any matched fragment from file: " + lcmsid.mzXMLFileName);
+                    LogManager.getRootLogger().warn("Skipped peptide ion: " + pepIonID.GetKey() + " because it does not have any matched fragment from file: " + lcmsid.mzXMLFileName);
                 }
             }
         }
         try {
             GenerateDecoyLib();
         } catch (MatrixLoaderException ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
  

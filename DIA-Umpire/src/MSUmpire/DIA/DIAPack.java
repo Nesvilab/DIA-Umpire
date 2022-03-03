@@ -62,7 +62,8 @@ import java.util.zip.DataFormatException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 
 /**
@@ -161,8 +162,8 @@ public class DIAPack {
             try {
                 SpectrumParser = SpectrumParserBase.GetInstance(Filename, parameter, dIA_Setting.dataType, dIA_Setting, NoCPUs);
             } catch (Exception ex) {
-                Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
-                Logger.getRootLogger().error("Read spectral file:" + Filename + " failed.");
+                LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                LogManager.getRootLogger().error("Read spectral file:" + Filename + " failed.");
                 System.exit(2);
             }
             dIA_Setting = SpectrumParser.dIA_Setting;
@@ -452,7 +453,7 @@ public class DIAPack {
 
     //Entry of quantification process
     public void AssignQuant(boolean export) throws IOException, SQLException {
-        Logger.getRootLogger().info("Assign peak cluster to identified peptides");
+        LogManager.getRootLogger().info("Assign peak cluster to identified peptides");
         GenerateClusterScanNomapping();
         
         ExecutorService executorPool = null;
@@ -483,7 +484,7 @@ public class DIAPack {
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
 
         if (export) {
@@ -498,7 +499,7 @@ public class DIAPack {
     //Quantification process for peptide ions from targeted re-extraction
     public void TargetedExtractionQuant(boolean export, FragmentLibManager libManager, float ReSearchProb, float RTWindow) throws IOException, SQLException {
         if (IDsummary.GetMappedPepIonList().isEmpty()) {
-            Logger.getRootLogger().error("There is no peptide ion for targeted re-extraction.");
+            LogManager.getRootLogger().error("There is no peptide ion for targeted re-extraction.");
             return;
         }
         parameter.RT_window_Targeted=RTWindow;
@@ -511,8 +512,8 @@ public class DIAPack {
         if (parameter.UseOldVersion) {
             TScoring.SetUseOldVersion();
         }
-        Logger.getRootLogger().info("No. of identified peptide ions: " + IDsummary.GetPepIonList().size());
-        Logger.getRootLogger().info("No. of mapped peptide ions: " + IDsummary.GetMappedPepIonList().size());
+        LogManager.getRootLogger().info("No. of identified peptide ions: " + IDsummary.GetPepIonList().size());
+        LogManager.getRootLogger().info("No. of mapped peptide ions: " + IDsummary.GetMappedPepIonList().size());
         ArrayList<PepIonID> SearchList = new ArrayList<>();
         //For each peptide ions in targeted re-extraction, determine whether to research the peptide ion given a re-search probability threshold
         for (PepIonID pepIonID : IDsummary.GetMappedPepIonList().values()) {
@@ -528,13 +529,13 @@ public class DIAPack {
                 SearchList.add(pepIonID);
             }
         }
-        Logger.getRootLogger().info("No. of searchable peptide ions: " + SearchList.size());
+        LogManager.getRootLogger().info("No. of searchable peptide ions: " + SearchList.size());
 
         for (LCMSPeakDIAMS2 DIAWindow : DIAWindows) {
-            Logger.getRootLogger().info("Assigning clusters for peak groups in MS2 isolation window:" + FilenameUtils.getBaseName(DIAWindow.ScanCollectionName));
+            LogManager.getRootLogger().info("Assigning clusters for peak groups in MS2 isolation window:" + FilenameUtils.getBaseName(DIAWindow.ScanCollectionName));
 
             if (!DIAWindow.ReadPeakCluster()|| !DIAWindow.ReadPrecursorFragmentClu2Cur()) {
-                Logger.getRootLogger().warn("Reading results for " + DIAWindow.ScanCollectionName + " failed");
+                LogManager.getRootLogger().warn("Reading results for " + DIAWindow.ScanCollectionName + " failed");
                 continue;
             }
 
@@ -549,7 +550,7 @@ public class DIAPack {
                         executorPool.execute(matchunit);                        
                         TScoring.libTargetMatches.add(matchunit);
                     } else {
-                        Logger.getRootLogger().warn("skipping " + pepIonID.GetKey() + ", it has only " + libManager.GetFragmentLib(pepIonID.GetKey()).FragmentGroups.size() + " matched fragments");
+                        LogManager.getRootLogger().warn("skipping " + pepIonID.GetKey() + ", it has only " + libManager.GetFragmentLib(pepIonID.GetKey()).FragmentGroups.size() + " matched fragments");
                     }
                 }
             }
@@ -565,7 +566,7 @@ public class DIAPack {
                         executorPool.execute(matchunit);
                         TScoring.libIDMatches.add(matchunit);
                     } else {
-                        Logger.getRootLogger().warn("skipping " + pepIonID.GetKey() + ", it has only " + libManager.GetFragmentLib(pepIonID.GetKey()).FragmentGroups.size() + " matched fragments");
+                        LogManager.getRootLogger().warn("skipping " + pepIonID.GetKey() + ", it has only " + libManager.GetFragmentLib(pepIonID.GetKey()).FragmentGroups.size() + " matched fragments");
                     }
                 }
             }
@@ -574,12 +575,12 @@ public class DIAPack {
             try {
                 executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             } catch (InterruptedException e) {
-                Logger.getRootLogger().info("interrupted..");
+                LogManager.getRootLogger().info("interrupted..");
             }
             DIAWindow.ClearAllPeaks();
         }
         
-        Logger.getRootLogger().info("Removing entries with no precursor signal hits: total target entries: "+TScoring.libTargetMatches.size());
+        LogManager.getRootLogger().info("Removing entries with no precursor signal hits: total target entries: "+TScoring.libTargetMatches.size());
         ArrayList<UmpireSpecLibMatch> newlist=new ArrayList<>();
         for(UmpireSpecLibMatch match : TScoring.libTargetMatches){
             if (!match.DecoyHits.isEmpty() || !match.TargetHits.isEmpty()) {
@@ -587,7 +588,7 @@ public class DIAPack {
             }
         }
         TScoring.libTargetMatches=newlist;
-        Logger.getRootLogger().info("Remaining entries: "+TScoring.libTargetMatches.size());
+        LogManager.getRootLogger().info("Remaining entries: "+TScoring.libTargetMatches.size());
         
         //U-score and probablilty calculatation  
         TScoring.Process();    
@@ -609,7 +610,7 @@ public class DIAPack {
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
         
         if (export) {
@@ -654,7 +655,7 @@ public class DIAPack {
             if (refID == null) {
                 pepxmlid.FilterByPepDecoyFDR(searchPara.DecoyPrefix, searchPara.PepFDR);
             }
-            Logger.getRootLogger().info("No. of peptide ions:" + pepxmlid.GetPepIonList().size() + "; Peptide level threshold: " + pepxmlid.PepProbThreshold);
+            LogManager.getRootLogger().info("No. of peptide ions:" + pepxmlid.GetPepIonList().size() + "; Peptide level threshold: " + pepxmlid.PepProbThreshold);
             for (PepIonID pepID : pepxmlid.GetPepIonList().values()) {
                 if (refID != null) {
                     if (refID.GetPepIonList().containsKey(pepID.GetKey())) {
@@ -666,7 +667,7 @@ public class DIAPack {
             }
         }
         IDsummary.ReMapProPep();
-        Logger.getRootLogger().info("Total number of peptide ions:" + IDsummary.GetPepIonList().size());
+        LogManager.getRootLogger().info("Total number of peptide ions:" + IDsummary.GetPepIonList().size());
         CheckPSMRT();
         if (MS1FeatureMap != null) {
             this.MS1FeatureMap.IDsummary = IDsummary;
@@ -701,7 +702,7 @@ public class DIAPack {
         if(RawMGFExist()){
             return;
         }        
-        Logger.getRootLogger().info("Extracting pseudo MS/MS spectra with raw intensity");
+        LogManager.getRootLogger().info("Extracting pseudo MS/MS spectra with raw intensity");
         HashMap<Integer, ArrayList<PseudoMSMSProcessing>> ScanList = new HashMap<>();
         HashMap<String, PseudoMSMSProcessing> UnfragScanList = new HashMap<>();
         parameter.BoostComplementaryIon = false;
@@ -737,14 +738,14 @@ public class DIAPack {
             }
             DIAwindow.ClearAllPeaks();
             System.gc();
-            Logger.getRootLogger().info("(Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
+            LogManager.getRootLogger().info("(Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
         }
         executorPool.shutdown();
 
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
         ReadScanNoMapping();
         String mgffile = GetSkylineFolder() + GetForLibQ1Name() + ".mgf";
@@ -836,15 +837,15 @@ public class DIAPack {
     private void FindPSMRT(){        
         try {
             if(!new File(FilenameUtils.getFullPath(Filename) + GetQ1Name() + ".mzXML").exists()){
-                Logger.getRootLogger().warn(FilenameUtils.getFullPath(Filename) + GetQ1Name() + ".mzXML doesn't exsit." );
+                LogManager.getRootLogger().warn(FilenameUtils.getFullPath(Filename) + GetQ1Name() + ".mzXML doesn't exsit." );
                 return;
             }
             if(!new File(FilenameUtils.getFullPath(Filename) + GetQ2Name() + ".mzXML").exists()){
-                Logger.getRootLogger().warn(FilenameUtils.getFullPath(Filename) + GetQ2Name() + ".mzXML doesn't exsit." );
+                LogManager.getRootLogger().warn(FilenameUtils.getFullPath(Filename) + GetQ2Name() + ".mzXML doesn't exsit." );
                 return;
             }
             if(!new File(FilenameUtils.getFullPath(Filename) + GetQ3Name() + ".mzXML").exists()){
-                Logger.getRootLogger().warn(FilenameUtils.getFullPath(Filename) + GetQ3Name() + ".mzXML doesn't exsit." );
+                LogManager.getRootLogger().warn(FilenameUtils.getFullPath(Filename) + GetQ3Name() + ".mzXML doesn't exsit." );
                 return;
             }
             
@@ -862,7 +863,7 @@ public class DIAPack {
                 }
             }
         } catch (Exception ex) {
-            Logger.getRootLogger().warn("Exception trying to fill PSM RTs");
+            LogManager.getRootLogger().warn("Exception trying to fill PSM RTs");
         }
     }
    
@@ -921,12 +922,12 @@ public class DIAPack {
         MS1FeatureMap.ExportPeakCurveTable = false;
         
         MS1FeatureMap.SetSpectrumParser(GetSpectrumParser());
-        Logger.getRootLogger().info("Processing MS1 peak detection");        
+        LogManager.getRootLogger().info("Processing MS1 peak detection");        
         MS1FeatureMap.ExportPeakClusterTable = ExportPrecursorPeak;
         //Start MS1 feature detection
         MS1FeatureMap.PeakClusterDetection();
 
-        Logger.getRootLogger().info("==================================================================================");
+        LogManager.getRootLogger().info("==================================================================================");
     }
 
     //Remove pseudo MS/MS spectra MGF files
@@ -1022,12 +1023,12 @@ public class DIAPack {
         int count = 1;
         //CreateSWATHTables();
         for (LCMSPeakDIAMS2 DIAwindow : DIAWindows) {
-            Logger.getRootLogger().info("Processing DIA MS2 (mz range):" + DIAwindow.DIA_MZ_Range.getX() + "_" + DIAwindow.DIA_MZ_Range.getY() + "( " + (count++) + "/" + GetSpectrumParser().dIA_Setting.DIAWindows.size() + " )");
+            LogManager.getRootLogger().info("Processing DIA MS2 (mz range):" + DIAwindow.DIA_MZ_Range.getX() + "_" + DIAwindow.DIA_MZ_Range.getY() + "( " + (count++) + "/" + GetSpectrumParser().dIA_Setting.DIAWindows.size() + " )");
             DIAwindow.ExportPeakCurveTable = ExportFragmentPeak;
             DIAwindow.ExportPeakClusterTable = ExportPrecursorPeak;
             DIAwindow.PeakDetectionPFGrouping(MS1FeatureMap);
             DIAwindow.ClearAllPeaks();
-            Logger.getRootLogger().info("==================================================================================");
+            LogManager.getRootLogger().info("==================================================================================");
         }
         for(final BufferedWriter bw : DIAPack.file_handlers.values())
             bw.close();
@@ -1094,7 +1095,7 @@ public class DIAPack {
         try {
             MS1FeatureMap.GenerateMassCalibrationRTMap();
         } catch (IOException ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
 
         for (LCMSPeakDIAMS2 DIAwindow : DIAWindows) {

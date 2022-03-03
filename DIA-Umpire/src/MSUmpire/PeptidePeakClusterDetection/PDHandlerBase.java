@@ -38,8 +38,7 @@ import java.util.concurrent.TimeUnit;
 import net.sf.javaml.core.kdtree.KDTree;
 import net.sf.javaml.core.kdtree.KeySizeException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Peak detection processing parent class
@@ -78,7 +77,7 @@ public class PDHandlerBase {
                 count++;
             }
             else{
-                //Logger.getRootLogger().warn("Missing signals: mz="+point.getX()+", RT="+point.getY());
+                //LogManager.getRootLogger().warn("Missing signals: mz="+point.getX()+", RT="+point.getY());
             }
         }
         return count+"/"+InclusionFound.size();                
@@ -92,7 +91,7 @@ public class PDHandlerBase {
         try {
             InclusionRange.insert(new double[]{rt,mz}, point);
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
           
@@ -119,7 +118,7 @@ public class PDHandlerBase {
             //Detect mz trace peak curves for each ScanCollection
             FindAllMzTracePeakCurves(scanCollection);
         }
-        Logger.getRootLogger().info("Inclusion mz values found: "+InclusionCheckInfo());        
+        LogManager.getRootLogger().info("Inclusion mz values found: "+InclusionCheckInfo());        
         //Perform peak smoothing for each detected peak curve
 //        PeakCurveSmoothing_and_ClearRawPeaks();
     }
@@ -136,9 +135,9 @@ public class PDHandlerBase {
     protected void FindAllMzTracePeakCurves(ScanCollection scanCollection) throws IOException {
 //        final HashSet<String> IncludedHashMap = new HashSet<>();
 
-//        Logger.getRootLogger().info("Processing all scans to detect possible m/z peak curves....");
-        Logger.getRootLogger().info("Processing all scans to detect possible m/z peak curves and");
-        Logger.getRootLogger().info("Smoothing detected signals......");
+//        LogManager.getRootLogger().info("Processing all scans to detect possible m/z peak curves....");
+        LogManager.getRootLogger().info("Processing all scans to detect possible m/z peak curves and");
+        LogManager.getRootLogger().info("Smoothing detected signals......");
         float preRT = 0f;
         
         //Loop for each scan in the ScanCollection
@@ -330,7 +329,7 @@ public class PDHandlerBase {
         try {
             fjp.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
         int i = 1;
         //Assign peak curve index
@@ -339,8 +338,8 @@ public class PDHandlerBase {
         }
         
         System.gc();
-//        Logger.getRootLogger().info(LCMSPeakBase.UnSortedPeakCurves.size() + " Peak curves found (Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
-        Logger.getRootLogger().info(peakCurvesCount + " Peak curves found (Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
+//        LogManager.getRootLogger().info(LCMSPeakBase.UnSortedPeakCurves.size() + " Peak curves found (Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
+        LogManager.getRootLogger().info(peakCurvesCount + " Peak curves found (Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
     }
         
     private boolean FoundInInclusionRTList(float rt){              
@@ -360,7 +359,7 @@ public class PDHandlerBase {
         try {
             found = InclusionRange.range(new double[]{lowrt,lowmz}, new double[]{highrt,highmz});
         } catch (KeySizeException ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
         if(found!=null && found.length>0){
             return true;
@@ -381,7 +380,7 @@ public class PDHandlerBase {
         try {
             found = InclusionRange.range(new double[]{lowrt,lowmz}, new double[]{highrt,highmz});
         } catch (KeySizeException ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
         if(found!=null && found.length>0){
             for(Object point: found){
@@ -421,7 +420,7 @@ public class PDHandlerBase {
     static private int step_pccc=-1;
     //Group peak curves based on peak profile correlation of isotope peaks
     protected void PeakCurveCorrClustering(XYData mzRange) throws IOException{
-        Logger.getRootLogger().info("Grouping isotopic peak curves........");
+        LogManager.getRootLogger().info("Grouping isotopic peak curves........");
 
         LCMSPeakBase.PeakClusters = new ArrayList<>();
         
@@ -466,7 +465,7 @@ public class PDHandlerBase {
         try {
             fjp.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
 
         for (final PeakCluster peakCluster : resultClusters) {
@@ -482,6 +481,6 @@ public class PDHandlerBase {
         }
 
         System.gc();
-        Logger.getRootLogger().info("No of ion clusters:" + LCMSPeakBase.PeakClusters.size() + " (Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
+        LogManager.getRootLogger().info("No of ion clusters:" + LCMSPeakBase.PeakClusters.size() + " (Memory usage:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB)");
     }
 }

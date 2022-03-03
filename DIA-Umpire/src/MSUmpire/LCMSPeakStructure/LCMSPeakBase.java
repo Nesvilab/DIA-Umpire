@@ -42,7 +42,8 @@ import net.sf.javaml.core.kdtree.KeySizeException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 
@@ -232,7 +233,7 @@ public class LCMSPeakBase {
 
     public void ExportPeakClusterResultCSV() throws IOException {
 
-        Logger.getRootLogger().info("Writing PeakCluster CSV:" + FilenameUtils.getFullPath(ScanCollectionName) + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.csv...");
+        LogManager.getRootLogger().info("Writing PeakCluster CSV:" + FilenameUtils.getFullPath(ScanCollectionName) + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.csv...");
         FileWriter writer = new FileWriter(FilenameUtils.getFullPath(ScanCollectionName) + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.csv");
 
         String mzstring = "";
@@ -307,28 +308,28 @@ public class LCMSPeakBase {
 
     private void FS_PeakClusterWrite() {
         try {
-            Logger.getRootLogger().info("Writing PeakCluster serialization to file:" +  FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS...");
+            LogManager.getRootLogger().info("Writing PeakCluster serialization to file:" +  FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(ParentmzXMLName)+ FilenameUtils.getBaseName(ParentmzXMLName)+"_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS", false);
             FSTObjectOutput out = new FSTObjectOutput(fout);
             out.writeObject(PeakClusters);
             out.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             JavaSerializationPeakClusterWrite();
         }
     }
     
     private void JavaSerializationPeakClusterWrite() {
         try {
-            Logger.getRootLogger().info("Writing PeakCluster serialization to file:" +  FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.ser...");
+            LogManager.getRootLogger().info("Writing PeakCluster serialization to file:" +  FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.ser...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(ParentmzXMLName)+ FilenameUtils.getBaseName(ParentmzXMLName)+"_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.ser", false);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(PeakClusters);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -353,7 +354,7 @@ public class LCMSPeakBase {
             return false;
         }
         try {
-            Logger.getRootLogger().info("Reading PeakCluster serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.ser...");
+            LogManager.getRootLogger().info("Reading PeakCluster serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.ser...");
 
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName)+ FilenameUtils.getBaseName(ParentmzXMLName)+"_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -361,7 +362,7 @@ public class LCMSPeakBase {
             in.close();
             fileIn.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;
@@ -372,7 +373,7 @@ public class LCMSPeakBase {
             return false;
         }
         try {
-            Logger.getRootLogger().info("Reading PeakCluster serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS...");
+            LogManager.getRootLogger().info("Reading PeakCluster serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS...");
 
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName)+ FilenameUtils.getBaseName(ParentmzXMLName)+"_Peak/" + FilenameUtils.getBaseName(ScanCollectionName)+ "_PeakCluster.serFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
@@ -380,12 +381,12 @@ public class LCMSPeakBase {
             in.close();
             fileIn.close();            
         } catch (Exception ex) {            
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             if(FS_PeakClusterRead_Old()){
                 WritePeakClusterSerialization();                
                 return true;
             }
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         } 
         return true;
@@ -396,7 +397,7 @@ public class LCMSPeakBase {
             return false;
         }
         try {
-            Logger.getRootLogger().info("Old PeakCluster serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS...");
+            LogManager.getRootLogger().info("Old PeakCluster serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS...");
 
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName)+ FilenameUtils.getBaseName(ParentmzXMLName)+"_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_PeakCluster.serFS");
             org.nustaq.serialization.FSTObjectInput in = new org.nustaq.serialization.FSTObjectInput(fileIn);
@@ -404,8 +405,8 @@ public class LCMSPeakBase {
             in.close();
             fileIn.close();            
         } catch (Exception ex) {
-            Logger.getRootLogger().error("Old version reader still failed.");
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error("Old version reader still failed.");
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         } 
         return true;
@@ -428,14 +429,14 @@ public class LCMSPeakBase {
     
     public KDTree GetPeakClusterMassSearchTree() {
         if (PeakClusterMassSearchTree == null) {
-            Logger.getRootLogger().info("Building PeakCluster Mass-RT KD tree");
+            LogManager.getRootLogger().info("Building PeakCluster Mass-RT KD tree");
             PeakClusterMassSearchTree = new KDTree(2);
             for (int i = 0; i < PeakClusters.size(); i++) {
                 PeakCluster peakCluster = PeakClusters.get(i);
                 try {
                     PeakClusterMassSearchTree.insert(new double[]{peakCluster.PeakHeightRT[0], peakCluster.NeutralMass()}, peakCluster);
                 } catch (KeyDuplicateException | KeySizeException ex) {
-                    Logger.getRootLogger().error(ex.getMessage());
+                    LogManager.getRootLogger().error(ex.getMessage());
                 }
             }
         }
@@ -444,7 +445,7 @@ public class LCMSPeakBase {
        
     public KDTree GetPeakCurveSearchTree(){
         if(PeakCurveSearchTree==null){
-            Logger.getRootLogger().info("Building PeakCurve Mass-RT KD tree");
+            LogManager.getRootLogger().info("Building PeakCurve Mass-RT KD tree");
             PeakCurveSearchTree=new KDTree(2);
             for(PeakCurve peakCurve : UnSortedPeakCurves){
                 try {

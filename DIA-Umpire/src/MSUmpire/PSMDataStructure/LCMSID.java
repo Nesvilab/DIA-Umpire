@@ -30,6 +30,7 @@ import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
+import org.apache.logging.log4j.LogManager;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 import java.io.File;
@@ -43,7 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Identification data structure for a LC-MS run
@@ -111,7 +112,7 @@ public class LCMSID implements Serializable {
 
     public void WriteLCMSIDSerialization(String filepath, String tag) {        
         if (!FSWrite(filepath, tag)) {
-            Logger.getRootLogger().debug("Writing LCMSID FS failed. writing standard serialization instead");            
+            LogManager.getRootLogger().debug("Writing LCMSID FS failed. writing standard serialization instead");
         }
     }
 
@@ -156,7 +157,7 @@ public class LCMSID implements Serializable {
             if (!tag.equals("")) {
                 tag = "_" + tag;
             }
-            Logger.getRootLogger().info("Writing ID results to file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + tag + "_LCMSID.serFS...");
+            LogManager.getRootLogger().info("Writing ID results to file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + tag + "_LCMSID.serFS...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + tag + "_LCMSID.serFS", false);
             FSTObjectOutput out = new FSTObjectOutput(fout);
             ReduceMemoryUsage();
@@ -164,7 +165,7 @@ public class LCMSID implements Serializable {
             out.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;
@@ -178,7 +179,7 @@ public class LCMSID implements Serializable {
             return null;
         }
         try {
-            Logger.getRootLogger().info("Reading ID results from file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + tag + "_LCMSID.serFS...");
+            LogManager.getRootLogger().info("Reading ID results from file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + tag + "_LCMSID.serFS...");
 
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + tag + "_LCMSID.serFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
@@ -188,8 +189,8 @@ public class LCMSID implements Serializable {
             return lcmsid;
 
         } catch (Exception ex) {
-            Logger.getRootLogger().info("Reading LCMSID FS results failed.");
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().info("Reading LCMSID FS results failed.");
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;
         }
     }
@@ -357,7 +358,7 @@ public class LCMSID implements Serializable {
         if(folder==null | "".equals(folder)){
             folder=FilenameUtils.getFullPath(mzXMLFileName);
         }        
-        Logger.getRootLogger().info("Writing PSM result to file:" + folder + FilenameUtils.getBaseName(mzXMLFileName) + "_PSMs.csv...");
+        LogManager.getRootLogger().info("Writing PSM result to file:" + folder + FilenameUtils.getBaseName(mzXMLFileName) + "_PSMs.csv...");
         FileWriter writer = new FileWriter(folder + FilenameUtils.getBaseName(mzXMLFileName) + "_PSMs.csv");
         writer.write("SpecID,Sequence,ModSeq,TPPModSeq,Modification,Charge,mz,NeutralPepMass,ObservedMass,RT,AdjustedRT,Rank,ScanNo,PreAA,NextAA,MissedCleavage,ExpectValue,MassError,Prob,Rawname,ParentPepIndex,MS1Quant\n");
         for (PepIonID pepion : PepIonList.values()) {
@@ -369,7 +370,7 @@ public class LCMSID implements Serializable {
     }
 
     private void ExportMappedPepIonCSV() throws IOException {
-        Logger.getRootLogger().info("Writing MappedPepIonIDs result to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_MappedPepIonIDs.csv...");
+        LogManager.getRootLogger().info("Writing MappedPepIonIDs result to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_MappedPepIonIDs.csv...");
         FileWriter writer = new FileWriter(FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_MappedPepIonIDs.csv");
         writer.write("PepIndex,Sequence,ModSeq,TPPModSeq,ModInfo,Charge,mz,PredictRT, PeakRT,MS1ClusIndex,MS2ClusIndex,PeakScore,PeakHeight1,PeakHeight2,PeakHeight3,PeakArea1,PeakArea2,PeakArea3,MS1AlignmentProb,MS1AlignmentLProb,MS2AlignmentProb,MS2AlignmentLProb\n");
         int index = 1;
@@ -384,7 +385,7 @@ public class LCMSID implements Serializable {
             folder=FilenameUtils.getFullPath(mzXMLFileName);
         }
         
-        Logger.getRootLogger().info("Writing PepIon result to file:" + folder + FilenameUtils.getBaseName(mzXMLFileName) + "_PepIonIDs.csv...");
+        LogManager.getRootLogger().info("Writing PepIon result to file:" + folder + FilenameUtils.getBaseName(mzXMLFileName) + "_PepIonIDs.csv...");
         FileWriter writer = new FileWriter(folder + FilenameUtils.getBaseName(mzXMLFileName) + "_PepIonIDs.csv");
         writer.write("PepIndex,Sequence,ModSeq,TPPModSeq,IsNonDegenerate,Charge,mz,IDRT,PeakRT,NoPSMs,MS1ClusIndex,MS2ClusIndex,PeakScore,PeakHeight1,PeakHeight2,PeakHeight3,PeakArea1,PeakArea2,PeakArea3\n");
         for (PepIonID pepion : PepIonList.values()) {
@@ -397,7 +398,7 @@ public class LCMSID implements Serializable {
         if(folder==null | "".equals(folder)){
             folder=FilenameUtils.getFullPath(mzXMLFileName);
         }
-        Logger.getRootLogger().info("Writing ProteinID result to file:" + folder + FilenameUtils.getBaseName(mzXMLFileName) + "_ProtIDs.csv...");
+        LogManager.getRootLogger().info("Writing ProteinID result to file:" + folder + FilenameUtils.getBaseName(mzXMLFileName) + "_ProtIDs.csv...");
         FileWriter writer = new FileWriter(folder + FilenameUtils.getBaseName(mzXMLFileName) + "_ProtIDs.csv");
         writer.write("AccNo,UniProtID,ProteinLength,ProteinGroup,IndisProt,Description,Mass,Score,Peptides,Sequence\n");
         for (ProtID protein : ProteinList.values()) {
@@ -415,7 +416,7 @@ public class LCMSID implements Serializable {
     }
 
     private void ExportMappedPepFragmentCSV() throws IOException {
-        Logger.getRootLogger().info("Writing PepFragment result to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_MappedPepFragments.csv...");
+        LogManager.getRootLogger().info("Writing PepFragment result to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_MappedPepFragments.csv...");
         FileWriter writer = new FileWriter(FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_MappedPepFragments.csv");
         writer.write("PepIndex,IonType,fragMZ,ObservedMZ,Charge,Intensity,Correlation,PPM,ApexDelta,RTOverlapP\n");
         for (PepIonID pepion : MappedPepIonList.values()) {
@@ -427,7 +428,7 @@ public class LCMSID implements Serializable {
     }
 
     private void ExportPepFragmentCSV() throws IOException {
-        Logger.getRootLogger().info("Writing PepFragment result to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_PepFragments.csv...");
+        LogManager.getRootLogger().info("Writing PepFragment result to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_PepFragments.csv...");
         FileWriter writer = new FileWriter(FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_PepFragments.csv");
         writer.write("PepIndex,IonType,fragMZ,ObservedMZ,Charge,Intensity,Correlation,PPM,ApexDelta,RTOverlapP\n");
         for (PepIonID pepion : PepIonList.values()) {
@@ -465,11 +466,11 @@ public class LCMSID implements Serializable {
                             if (Sequence != null) {
                                 protID.SetSequence(Sequence);
                             } else {
-                                Logger.getRootLogger().error("Can't find sequence in fasta file for protein:" + protID.getAccNo());
+                                LogManager.getRootLogger().error("Can't find sequence in fasta file for protein:" + protID.getAccNo());
                             }
                         } catch (Exception ex) {
-                            Logger.getRootLogger().error("Can't find sequence in fasta file for protein:" + protID.getAccNo());
-                            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                            LogManager.getRootLogger().error("Can't find sequence in fasta file for protein:" + protID.getAccNo());
+                            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
                         }
                     }
                 }
@@ -521,11 +522,11 @@ public class LCMSID implements Serializable {
             if (i + 1 == sortedlist.size() ||
                     (protein.MaxIniProb > sortedlist.get(i + 1).MaxIniProb && (float) negative / (float) (positive) >= ProteinFDR)) {
                 ProteinProbThreshold = protein.MaxIniProb;
-                Logger.getRootLogger().info("Protein maxiniprob threshold=" + ProteinProbThreshold + " Estimated raw protein FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
+                LogManager.getRootLogger().info("Protein maxiniprob threshold=" + ProteinProbThreshold + " Estimated raw protein FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
                 return;
             }
         }
-        Logger.getRootLogger().info("Protein maxiniprob threshold=" + ProteinProbThreshold + " Estimated raw protein FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
+        LogManager.getRootLogger().info("Protein maxiniprob threshold=" + ProteinProbThreshold + " Estimated raw protein FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
     }
 
     public void ClearPeakData() {
@@ -646,11 +647,11 @@ public class LCMSID implements Serializable {
             }
             if (pep.MaxProbability < sortedlist.get(i - 1).MaxProbability && ((float) negative / (float) (positive) >= FDR)) {
                 PepProbThreshold = pep.MaxProbability;
-                Logger.getRootLogger().info("Probability threshold=" + PepProbThreshold + " Estimated FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
+                LogManager.getRootLogger().info("Probability threshold=" + PepProbThreshold + " Estimated FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
                 return;
             }
         }
-        Logger.getRootLogger().info("Probability threshold=" + PepProbThreshold + " Estimated FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
+        LogManager.getRootLogger().info("Probability threshold=" + PepProbThreshold + " Estimated FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
     }
 
     public void GenearteAssignIonList() {
@@ -712,7 +713,7 @@ public class LCMSID implements Serializable {
             }
             if (protein.Probability < sortedlist.get(i - 1).Probability && (float) negative / (float) (positive) >= ProteinFDR) {
                 ProteinProbThreshold = protein.Probability;
-                Logger.getRootLogger().info("Protein probability threshold=" + ProteinProbThreshold + " Estimated raw protein FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
+                LogManager.getRootLogger().info("Protein probability threshold=" + ProteinProbThreshold + " Estimated raw protein FDR:" + (float) negative / (float) (positive) + "(Target/Decoy)=(" + positive + "/" + negative + ")");
                 return;
             }
         }
@@ -1072,8 +1073,8 @@ public class LCMSID implements Serializable {
             }
         }
         float rf = (float) forward / decoy;
-        Logger.getRootLogger().info("Caculating R factor: probability threshold =" + ProbThreshold);
-        Logger.getRootLogger().info("R factor=" + rf + " (forward/decoy=" + forward + "/" + decoy + ")");
+        LogManager.getRootLogger().info("Caculating R factor: probability threshold =" + ProbThreshold);
+        LogManager.getRootLogger().info("R factor=" + rf + " (forward/decoy=" + forward + "/" + decoy + ")");
         return rf;
     }
 }

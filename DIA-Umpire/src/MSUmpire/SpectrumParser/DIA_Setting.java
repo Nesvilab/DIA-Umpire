@@ -31,7 +31,8 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Definitions of DIA type and isolation window settings
@@ -46,14 +47,14 @@ public class DIA_Setting implements Serializable{
  
     public void WriteDIASettingSerialization(String mzXMLFileName) {
         try {
-            Logger.getRootLogger().info("Writing DIA setting to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_diasetting.ser...");
+            LogManager.getRootLogger().info("Writing DIA setting to file:" + FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_diasetting.ser...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(mzXMLFileName) + FilenameUtils.getBaseName(mzXMLFileName) + "_diasetting.ser", false);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(this);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -62,7 +63,7 @@ public class DIA_Setting implements Serializable{
             return null;
         }
         try {
-            Logger.getRootLogger().debug("Reading DIA setting from file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + "_diasetting.ser...");
+            LogManager.getRootLogger().debug("Reading DIA setting from file:" + FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + "_diasetting.ser...");
 
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(filepath) + FilenameUtils.getBaseName(filepath) + "_diasetting.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -72,7 +73,7 @@ public class DIA_Setting implements Serializable{
             return setting;
 
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;        
         }
     }

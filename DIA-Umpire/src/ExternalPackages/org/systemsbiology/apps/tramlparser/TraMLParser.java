@@ -53,7 +53,7 @@ package ExternalPackages.org.systemsbiology.apps.tramlparser;
 
 // Core
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import ExternalPackages.org.hupo.psi.ms.traml.TraMLType;
 import ExternalPackages.org.systemsbiology.constants.JTRAML_URL;
 

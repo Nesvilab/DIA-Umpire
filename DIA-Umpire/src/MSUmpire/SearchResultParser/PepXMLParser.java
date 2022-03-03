@@ -30,7 +30,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 /**
@@ -53,7 +53,7 @@ public class PepXMLParser {
         this.threshold = threshold;
         this.StartRT = StartRT;
         this.EndRT = EndRT;
-        Logger.getRootLogger().info("Parsing pepXML: " + FileName + "....");
+        LogManager.getRootLogger().info("Parsing pepXML: " + FileName + "....");
         ParseSAX();
     }
 
@@ -63,12 +63,12 @@ public class PepXMLParser {
         this.CorrectMassDiff=CorrectMassDiff;
         this.FileName = FileName;
         this.threshold = threshold;
-        Logger.getRootLogger().info("Parsing pepXML: " + FileName + "....");
+        LogManager.getRootLogger().info("Parsing pepXML: " + FileName + "....");
         try {
             ParseSAX();
         } catch (Exception e) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(e));
-            Logger.getRootLogger().info("Parsing pepXML: " + FileName + " failed. Trying to fix the file...");
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(e));
+            LogManager.getRootLogger().info("Parsing pepXML: " + FileName + " failed. Trying to fix the file...");
             insert_msms_run_summary(new File(FileName));
             ParseSAX();
         }
@@ -79,11 +79,11 @@ public class PepXMLParser {
         this.singleLCMSID = singleLCMSID;
         this.FileName = FileName;
         this.threshold = threshold;
-        Logger.getRootLogger().info("Parsing pepXML: " + FileName + "....");
+        LogManager.getRootLogger().info("Parsing pepXML: " + FileName + "....");
         try {
             ParseSAX();
         } catch (Exception e) {
-            Logger.getRootLogger().info("Parsing pepXML: " + FileName + " failed. Trying to fix the file...");
+            LogManager.getRootLogger().info("Parsing pepXML: " + FileName + " failed. Trying to fix the file...");
             insert_msms_run_summary(new File(FileName));
             ParseSAX();
         }
@@ -93,7 +93,7 @@ public class PepXMLParser {
     private void ParseSAX() throws IOException {
         File fXmlFile = new File(FileName);
         if (!fXmlFile.exists()) {
-            Logger.getRootLogger().error("File :" + FileName + " cannot be found");
+            LogManager.getRootLogger().error("File :" + FileName + " cannot be found");
             return;
         }
         FileInputStream inputStream = new FileInputStream(FileName);

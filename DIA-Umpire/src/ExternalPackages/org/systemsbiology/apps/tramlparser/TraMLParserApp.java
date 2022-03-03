@@ -54,9 +54,14 @@ package ExternalPackages.org.systemsbiology.apps.tramlparser;
 
 // org.apache
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+
+import java.nio.file.Paths;
 
 
 /*  
@@ -65,7 +70,7 @@ import org.apache.log4j.PropertyConfigurator;
 public class TraMLParserApp {
 
     // Set a global logger and handler
-    private static Logger logger = Logger.getLogger(TraMLParserApp.class.getName());
+    private static Logger logger = LogManager.getLogger(TraMLParserApp.class.getName());
 
     // Main class for cmd line invocation.
     public static void main(String[] args) {
@@ -75,7 +80,9 @@ public class TraMLParserApp {
         if (log4jPropertyFile == null) {
             setDefaultLoggerHandler();
         } else {
-            PropertyConfigurator.configure(log4jPropertyFile);
+//            PropertyConfigurator.configure(log4jPropertyFile);
+            final LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
+            context.setConfigLocation(Paths.get(log4jPropertyFile).toUri());
         }
 
         TraMLParser parser = new TraMLParser();
@@ -95,7 +102,8 @@ public class TraMLParserApp {
 
     private static void setDefaultLoggerHandler() {
         // Configure log4j style
-        BasicConfigurator.configure();
+        Configurator.initialize(new DefaultConfiguration());
+        Configurator.setRootLevel(Level.INFO);
 
         // java.util.log configuration
         // logger.addHandler(new ConsoleHandler());

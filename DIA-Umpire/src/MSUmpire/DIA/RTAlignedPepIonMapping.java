@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -79,7 +79,7 @@ public class RTAlignedPepIonMapping implements Runnable{
         regression = new PiecewiseRegression(parameter.MaxCurveRTRange,parameter.MaxCurveRTRange);
         regression.SetData(points);
         float R2 = regression.GetR2();
-        Logger.getRootLogger().info("Retention time prediction model:(" + FilenameUtils.getBaseName(LCMSA.mzXMLFileName) + "-" + FilenameUtils.getBaseName(LCMSB.mzXMLFileName) + ")..R2=" + R2 + "(No. of commonly identified peptide ions="+points.PointCount()+")");
+        LogManager.getRootLogger().info("Retention time prediction model:(" + FilenameUtils.getBaseName(LCMSA.mzXMLFileName) + "-" + FilenameUtils.getBaseName(LCMSB.mzXMLFileName) + ")..R2=" + R2 + "(No. of commonly identified peptide ions="+points.PointCount()+")");
         
         GenerateRTMapPNG(xySeriesCollection, series, R2);
     }
@@ -111,7 +111,7 @@ public class RTAlignedPepIonMapping implements Runnable{
     }
 
     public void GenerateMappedPepIon() {
-        Logger.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSB.mzXMLFileName) + "...");
+        LogManager.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSB.mzXMLFileName) + "...");
 
         if(!regression.valid()){
             return;
@@ -143,7 +143,7 @@ public class RTAlignedPepIonMapping implements Runnable{
             predictedPepIon.SetRTSD(predict.getZ());
         }
         
-        Logger.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSA.mzXMLFileName) + "...");
+        LogManager.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSA.mzXMLFileName) + "...");
 
         for (PepIonID pepion : LCMSB.GetPepIonList().values()) {
             PepIonID predictedPepIon = null;
@@ -173,7 +173,7 @@ public class RTAlignedPepIonMapping implements Runnable{
     }
 
     public void GenerateMappedPepIonToList(HashMap<String, PepIonID>ListA, HashMap<String, PepIonID> ListB) {
-        Logger.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSB.mzXMLFileName) + "...");
+        LogManager.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSB.mzXMLFileName) + "...");
 
         if(!regression.valid()){
             return;
@@ -204,7 +204,7 @@ public class RTAlignedPepIonMapping implements Runnable{
             }
         }
         
-        Logger.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSA.mzXMLFileName) + "...");
+        LogManager.getRootLogger().info("Mapping predicted peptide ions for " + FilenameUtils.getBaseName(LCMSA.mzXMLFileName) + "...");
 
         for (PepIonID pepion : LCMSB.GetPepIonList().values()) {
             if (!LCMSA.GetPepIonList().containsKey(pepion.GetKey())) {

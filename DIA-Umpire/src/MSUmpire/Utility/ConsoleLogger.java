@@ -19,37 +19,46 @@
  */
 package MSUmpire.Utility;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.filter.ThresholdFilter;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 /**
  *
  * @author Chih-Chiang Tsou
  */
 public class ConsoleLogger {
-
     public static void SetConsoleLogger(Level level) {
-        ConsoleAppender ca = new ConsoleAppender();
-        ca.setThreshold(level);
-        ca.setName("ConsoleLogger_Info");
-        ca.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
-        ca.activateOptions();
-        Logger.getRootLogger().getLoggerRepository().resetConfiguration();
-        Logger.getRootLogger().addAppender(ca);
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        ctx.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).removeAppender("Console");
+        ctx.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.ALL);
+        ConsoleAppender ca = ConsoleAppender.newBuilder()
+                .setFilter(ThresholdFilter.createFilter(level, null, null))
+                .setName("ConsoleLogger_Info")
+                .setLayout(PatternLayout.newBuilder().withPattern("%d %-5p [%t{1}] %m%n").build())
+                .build();
+        ca.start();
+        ctx.getConfiguration().addAppender(ca);
+        ctx.getRootLogger().addAppender(ctx.getConfiguration().getAppender(ca.getName()));
+        ctx.updateLoggers();
     }
 
     public static void SetFileLogger(Level level, String filename) {
-        FileAppender fa = new FileAppender();
-        fa.setName("FileLogger_Debug");
-        fa.setFile(filename);
-        fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
-        fa.setThreshold(level);
-        fa.setAppend(false);
-        fa.activateOptions();
-        Logger.getRootLogger().addAppender(fa);
+        final LoggerContext ctx = (LoggerContext)LogManager.getContext(false);
+        FileAppender fa = FileAppender.newBuilder()
+                .setName("FileLogger_Debug")
+                .withFileName(filename)
+                .setLayout(PatternLayout.newBuilder().withPattern("%d %-5p [%t{1}] %m%n").build())
+                .setFilter(ThresholdFilter.createFilter(level, null, null))
+                .withAppend(false)
+                .build();
+        fa.start();
+        ctx.getConfiguration().addAppender(fa);
+        ctx.getRootLogger().addAppender(ctx.getConfiguration().getAppender(fa.getName()));
+        ctx.updateLoggers();
     }
 
 }

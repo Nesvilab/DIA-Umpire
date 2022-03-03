@@ -47,7 +47,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -164,7 +165,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
                 //SpectrmParser = new mzXMLParser(ScanCollectionName, parameter, datattype, null, NoCPUs);
                 SpectrumParser = SpectrumParserBase.GetInstance(ScanCollectionName, parameter, datattype, null, NoCPUs);
             } catch (Exception ex) {
-                Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             }
         }
         return SpectrumParser;
@@ -180,7 +181,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
         ArrayList<ScanCollection> scanCollections = new ArrayList<>();
         //Calculate how many point per minute when we do B-spline peak smoothing
         parameter.NoPeakPerMin = (int) (parameter.SmoothFactor / GetSpectrumParser().GetMS1CycleTime());
-        Logger.getRootLogger().info("MS1 average cycle time : "+GetSpectrumParser().GetMS1CycleTime()*60+ " seconds");
+        LogManager.getRootLogger().info("MS1 average cycle time : "+GetSpectrumParser().GetMS1CycleTime()*60+ " seconds");
         
         if (MS1Windows == null || MS1Windows.isEmpty()) {
             //The data has only one MS1 scan set
@@ -207,7 +208,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
                     detection.AddToInclusionList(psm.GetObsrIsotopicMz(i), psm.RetentionTime);
                 }
             }
-            Logger.getRootLogger().info("No. of targeted PSM IDs:"+IDsummary.PSMList.size());
+            LogManager.getRootLogger().info("No. of targeted PSM IDs:"+IDsummary.PSMList.size());
         }
         //Start detect MS1 peak curve and isotope clusters
         detection.DetectPeakClusters(scanCollections);
@@ -248,8 +249,8 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
         if (!FilenameUtils.getBaseName(IDsummary.mzXMLFileName).equals(FilenameUtils.getBaseName(ScanCollectionName))) {
             return;
         }
-        Logger.getRootLogger().info("Assigning peak cluster to peptide IDs......");
-        Logger.getRootLogger().info("Total peptide ions to be quantified..:"+IDsummary.GetPepIonList().size());
+        LogManager.getRootLogger().info("Assigning peak cluster to peptide IDs......");
+        LogManager.getRootLogger().info("Total peptide ions to be quantified..:"+IDsummary.GetPepIonList().size());
         int count=0;
         for (PepIonID pepIonID : IDsummary.GetPepIonList().values()) {
             pepIonID.CreateQuantInstance(MaxNoPeakCluster);
@@ -278,12 +279,12 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
                 targetCluster.Identified = true;
             }
             else {
-                Logger.getRootLogger().warn("Feature for "+pepIonID.ModSequence+ " not found: Charge="+pepIonID.Charge+", mz="+pepIonID.ObservedMz+", RT="+pepIonID.GetRT());
+                LogManager.getRootLogger().warn("Feature for "+pepIonID.ModSequence+ " not found: Charge="+pepIonID.Charge+", mz="+pepIonID.ObservedMz+", RT="+pepIonID.GetRT());
             }
         }
         DecimalFormat df = new DecimalFormat("###.##");
               
-        Logger.getRootLogger().info("No. of peptide ions quantified..:"+count+"("+ df.format((float)count/IDsummary.GetPepIonList().size()*100)+"%)");
+        LogManager.getRootLogger().info("No. of peptide ions quantified..:"+count+"("+ df.format((float)count/IDsummary.GetPepIonList().size()*100)+"%)");
 
         if (export) {
             ExportID();
@@ -298,7 +299,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
         if (!FilenameUtils.getBaseName(IDsummary.mzXMLFileName).equals(FilenameUtils.getBaseName(ScanCollectionName))) {
             return;
         }
-        Logger.getRootLogger().info("Assigning peak cluster to mapped peptide IDs......");
+        LogManager.getRootLogger().info("Assigning peak cluster to mapped peptide IDs......");
         for (PepIonID pepIonID : IDsummary.GetMappedPepIonList().values()) {
             pepIonID.CreateQuantInstance(MaxNoPeakCluster);
 
@@ -435,7 +436,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
     }
 
     public void RemoveContaminantPeaks(float proportion) {
-        Logger.getRootLogger().info("Removing peak clusters whose m/z appear more than " +proportion*100+ "% chromatography. No. of peak clusters : "+PeakClusters.size());
+        LogManager.getRootLogger().info("Removing peak clusters whose m/z appear more than " +proportion*100+ "% chromatography. No. of peak clusters : "+PeakClusters.size());
         float minmz=Float.MAX_VALUE;
         float maxmz=Float.MIN_VALUE;
         float minrt=Float.MAX_VALUE;
@@ -470,10 +471,10 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
             if(MzBin[i]>threshold){
                 for (PeakCluster peakCluster : map.get(i)){ 
                     PeakClusters.remove(peakCluster);
-                    //Logger.getRootLogger().debug("Removing the cluster m/z: "+ peakCluster.TargetMz()+", StartRT: "+ peakCluster.startRT +", EndRT: "+peakCluster.endRT);
+                    //LogManager.getRootLogger().debug("Removing the cluster m/z: "+ peakCluster.TargetMz()+", StartRT: "+ peakCluster.startRT +", EndRT: "+peakCluster.endRT);
                 }
             }
         }
-        Logger.getRootLogger().info("Remaining peak clusters : "+PeakClusters.size());
+        LogManager.getRootLogger().info("Remaining peak clusters : "+PeakClusters.size());
     }
 }

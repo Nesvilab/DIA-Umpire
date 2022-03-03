@@ -24,7 +24,9 @@ import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Modification tag conversion class
@@ -72,7 +74,7 @@ public class ModStringConvert {
 
             modinfo.modification = PTMManager.GetInstance().GetPTM(modinfo.site, massdiff);
             if (modinfo.modification == null) {
-                Logger.getRootLogger().error("Modification was not found in the library: site:" + modinfo.site + ", massdiff=" + massdiff);
+                LogManager.getRootLogger().error("Modification was not found in the library: site:" + modinfo.site + ", massdiff=" + massdiff);
             }
             modinfo.massdiff = (float) modinfo.modification.getMass();
             modinfo.mass = (float) (modinfo.modification.getMass() + AminoAcid.getAminoAcid(modinfo.site).monoisotopicMass);

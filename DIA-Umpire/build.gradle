@@ -35,7 +35,11 @@ sourceSets {
 
 
 dependencies {
-    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+//    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
+
     implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'commons-codec:commons-codec:1.15'

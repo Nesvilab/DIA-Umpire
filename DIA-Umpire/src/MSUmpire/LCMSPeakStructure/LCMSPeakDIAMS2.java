@@ -52,7 +52,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.nustaq.serialization.FSTObjectInput;
@@ -105,8 +106,8 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
 
     public void RemoveFragmentPeakByMassDefect(){
         MassDefect MD=new MassDefect();
-     Logger.getRootLogger().info("Performing mass defect filter on fragment peaks");
-     Logger.getRootLogger().info("No. of fragment peaks: "+UnSortedPeakCurves.size());
+     LogManager.getRootLogger().info("Performing mass defect filter on fragment peaks");
+     LogManager.getRootLogger().info("No. of fragment peaks: "+UnSortedPeakCurves.size());
         ArrayList<PeakCurve> newlist=new ArrayList<>();
         for (PeakCurve peakCurve : UnSortedPeakCurves) {
             for (int charge = 1; charge <= 2; charge++) {
@@ -118,7 +119,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             }
         }
         UnSortedPeakCurves=newlist;
-        Logger.getRootLogger().info("No. of remaining fragment peaks: "+UnSortedPeakCurves.size());
+        LogManager.getRootLogger().info("No. of remaining fragment peaks: "+UnSortedPeakCurves.size());
     }
 
     public void PeakDetectionPFGrouping(LCMSPeakMS1 ms1lcms) throws InterruptedException, ExecutionException, IOException, FileNotFoundException, Exception {
@@ -128,7 +129,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             if (datattype != SpectralDataType.DataType.pSMART) {
                 swathdetection.DetectPeakCurves(GetScanCollection());
                 if (UnSortedPeakCurves.isEmpty()) {
-                    Logger.getRootLogger().info("No peak detected...................");
+                    LogManager.getRootLogger().info("No peak detected...................");
                     return;
                 }
                 
@@ -182,7 +183,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
 
         String mgffile = FilenameUtils.getFullPath(ParentmzXMLName) + GetQ1Name() + ".mgf.temp";
@@ -279,7 +280,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
 
         for (PseudoMSMSProcessing mSMSProcessing : ScanList) {
@@ -494,14 +495,14 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
 
     private void FSCluster2CurveWrite() {
         try {
-            Logger.getRootLogger().debug("Writing PrecursorFragmentCorr serialization to file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.serFS...");
+            LogManager.getRootLogger().debug("Writing PrecursorFragmentCorr serialization to file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.serFS...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(ParentmzXMLName) + FilenameUtils.getBaseName(ParentmzXMLName) + "_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.serFS", false);
             FSTObjectOutput oos = new FSTObjectOutput(fout);
             oos.writeObject(FragmentsClu2Cur);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -521,7 +522,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             return false;
         }
         try {
-            Logger.getRootLogger().debug("Reading PrecursorFragmentCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.serFS...");
+            LogManager.getRootLogger().debug("Reading PrecursorFragmentCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.serFS...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName) + FilenameUtils.getBaseName(ParentmzXMLName) + "_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.serFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             FragmentsClu2Cur = (HashMap<Integer, ArrayList<PrecursorFragmentPairEdge>>) in.readObject();
@@ -529,7 +530,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             fileIn.close();
 
         } catch (Exception ex) {            
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;
@@ -539,7 +540,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             return false;
         }
         try {
-            Logger.getRootLogger().debug("Reading PrecursorFragmentCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.ser...");
+            LogManager.getRootLogger().debug("Reading PrecursorFragmentCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.ser...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName) + FilenameUtils.getBaseName(ParentmzXMLName) + "_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_Clus2Cur.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             FragmentsClu2Cur = (HashMap<Integer, ArrayList<PrecursorFragmentPairEdge>>) in.readObject();
@@ -547,7 +548,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             fileIn.close();
 
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;
@@ -559,14 +560,14 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
 
     private void FSCluster2CurveUnfragWrite() {
         try {
-            Logger.getRootLogger().debug("Writing UnfragPrecursorFragCorr serialization to file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.serFS...");
+            LogManager.getRootLogger().debug("Writing UnfragPrecursorFragCorr serialization to file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.serFS...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(ParentmzXMLName) + FilenameUtils.getBaseName(ParentmzXMLName) + "_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.serFS", false);
             FSTObjectOutput oos = new FSTObjectOutput(fout);
             oos.writeObject(UnFragIonClu2Cur);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -586,7 +587,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             return false;
         }
         try {
-            Logger.getRootLogger().debug("Reading UnfragPrecursorFragCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.serFS...");
+            LogManager.getRootLogger().debug("Reading UnfragPrecursorFragCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.serFS...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName) + FilenameUtils.getBaseName(ParentmzXMLName) + "_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.serFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             UnFragIonClu2Cur = (HashMap<Integer, ArrayList<PrecursorFragmentPairEdge>>) in.readObject();
@@ -594,7 +595,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             fileIn.close();
 
         } catch (Exception ex) {            
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;
@@ -605,7 +606,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             return false;
         }
         try {
-            Logger.getRootLogger().debug("Reading UnfragPrecursorFragCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.ser...");
+            LogManager.getRootLogger().debug("Reading UnfragPrecursorFragCorr serialization from file:" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.ser...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(ParentmzXMLName) + FilenameUtils.getBaseName(ParentmzXMLName) + "_Peak/" + FilenameUtils.getBaseName(ScanCollectionName) + "_UnfClus2Cur.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             UnFragIonClu2Cur = (HashMap<Integer, ArrayList<PrecursorFragmentPairEdge>>) in.readObject();
@@ -613,7 +614,7 @@ public class LCMSPeakDIAMS2 extends LCMSPeakBase {
             fileIn.close();
 
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;

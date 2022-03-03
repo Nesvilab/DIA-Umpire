@@ -30,8 +30,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 /**
@@ -86,46 +86,46 @@ public class ExportWithEstimatedFDR {
             if (args[i].startsWith("-")) {
                 if (args[i].startsWith("-fP")) {
                     protFDR = Float.parseFloat(args[i].substring(3));
-                    Logger.getRootLogger().info("Protein FDR: " + protFDR);
+                    LogManager.getRootLogger().info("Protein FDR: " + protFDR);
                 }
                 if (args[i].startsWith("-fp")) {
                     pepFDR = Float.parseFloat(args[i].substring(3));
-                    Logger.getRootLogger().info("Peptide FDR: " + pepFDR);
+                    LogManager.getRootLogger().info("Peptide FDR: " + pepFDR);
                 }
                 if (args[i].startsWith("-MP")) {
                     MinprotProb = Float.parseFloat(args[i].substring(3));
-                    Logger.getRootLogger().info("Min protein parsing probability: " + MinprotProb);
+                    LogManager.getRootLogger().info("Min protein parsing probability: " + MinprotProb);
                 }
                 if (args[i].startsWith("-Mp")) {
                     MinpepProb = Float.parseFloat(args[i].substring(3));
-                    Logger.getRootLogger().info("Min PSM parsing probability: " + MinpepProb);
+                    LogManager.getRootLogger().info("Min PSM parsing probability: " + MinpepProb);
                 }
                 if (args[i].startsWith("-d")) {
                     DecoyTag = args[i].substring(2);
-                    Logger.getRootLogger().info("Decoy tag: " + DecoyTag);
+                    LogManager.getRootLogger().info("Decoy tag: " + DecoyTag);
                 }
                 if (args[i].startsWith("-fa")) {
                     Fasta = args[i].substring(3);
-                    Logger.getRootLogger().info("Fasta file: " + Fasta);
+                    LogManager.getRootLogger().info("Fasta file: " + Fasta);
                 }
                 if (args[i].startsWith("-N")) {
                     Outputname = args[i].substring(2);
-                    Logger.getRootLogger().info("Output filename: " +Outputname);
+                    LogManager.getRootLogger().info("Output filename: " +Outputname);
                 }
                 if (args[i].startsWith("-C")) {
                     if(args[i].substring(2).equals("1")){
                         CorrectMassDiff=true;
                     }
-                    Logger.getRootLogger().info("Correct mass diff: " +CorrectMassDiff);
+                    LogManager.getRootLogger().info("Correct mass diff: " +CorrectMassDiff);
                 }
                 
                 if (args[i].startsWith("-pt")) {
                     protprob = Float.parseFloat(args[i].substring(3));
-                    Logger.getRootLogger().info("Initial protein probablity filtering threshold: " + protprob);
+                    LogManager.getRootLogger().info("Initial protein probablity filtering threshold: " + protprob);
                 }
                 if (args[i].startsWith("-rf")) {
                     rfthreshold = Float.parseFloat(args[i].substring(3));
-                    Logger.getRootLogger().info("R factor threshold: " + rfthreshold);
+                    LogManager.getRootLogger().info("R factor threshold: " + rfthreshold);
                 }
             }
             if (args[i].endsWith(".pep.xml") || args[i].endsWith(".PepXML")) {
@@ -148,7 +148,7 @@ public class ExportWithEstimatedFDR {
             if (pepFDR != -1f) {
                 pepxmlid.FilterByPepDecoyFDR(DecoyTag, pepFDR);
             }
-            Logger.getRootLogger().info("peptide No.:" + pepxmlid.GetPepIonList().size() + "; Peptide level threshold: " + pepxmlid.PepProbThreshold);
+            LogManager.getRootLogger().info("peptide No.:" + pepxmlid.GetPepIonList().size() + "; Peptide level threshold: " + pepxmlid.PepProbThreshold);
             for (PepIonID pepID : pepxmlid.GetPepIonList().values()) {
                 lcmsid.AddPeptideID(pepID);
             }
@@ -175,7 +175,7 @@ public class ExportWithEstimatedFDR {
         }
         lcmsid.CreateInstanceForAllPepIon();        
         lcmsid.ExportPepID();
-        Logger.getRootLogger().info("Protein No.:" + lcmsid.ProteinList.size() + "; All peptide ions.:" + lcmsid.GetPepIonList().size());
+        LogManager.getRootLogger().info("Protein No.:" + lcmsid.ProteinList.size() + "; All peptide ions.:" + lcmsid.GetPepIonList().size());
     }
 
 }

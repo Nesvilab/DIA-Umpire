@@ -31,7 +31,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Vector;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -198,7 +198,7 @@ public class MixtureModelKDESemiParametric {
         double logLikelihoodThreshold = Math.abs(logLikelihoodNew) * 0.00001;
         double logLikelihoodOld;
 
-        Logger.getRootLogger().debug("EM mixture modeling");
+        LogManager.getRootLogger().debug("EM mixture modeling");
         do {
 
             logLikelihoodOld = logLikelihoodNew;
@@ -213,7 +213,7 @@ public class MixtureModelKDESemiParametric {
                 logLikelihoodNew += Math.log(decoydensity + correctdensity);    
             }
             // Display
-            Logger.getRootLogger().debug("Iterations:"+iterations + " LogLikelihood :"+logLikelihoodNew+ " total prob="+pisum);
+            LogManager.getRootLogger().debug("Iterations:"+iterations + " LogLikelihood :"+logLikelihoodNew+ " total prob="+pisum);
             //System.out.printf("%2d : %12.6f\n", iterations, logLikelihoodNew);
         } while (Math.abs(logLikelihoodNew - logLikelihoodOld) > logLikelihoodThreshold && iterations < MAX_ITERATIONS);
         weight_correct = pisum / TargetEmpiricalDist.getN();
@@ -301,12 +301,12 @@ public class MixtureModelKDESemiParametric {
         MixtureModel mm = ExpectationMaximization1D.initialize(clusters);
         mmc = ExpectationMaximization1D.run(points, mm);
         DecimalFormat df = new DecimalFormat("#.####");
-        Logger.getRootLogger().debug("----------------------------------------------------------------------------------------");
-        Logger.getRootLogger().debug("No. of modeling points=" + TargetEmpiricalDist.getN());
-        Logger.getRootLogger().debug("ID hits mean=" + df.format(IDEmpiricalDist.getMean()));
-        Logger.getRootLogger().debug("Decoy hits mean=" + df.format(DecoyEmpiricalDist.getMean()));
-        Logger.getRootLogger().debug("Initial model of incorrect dist., mean=" + df.format(((PVector) mmc.param[0]).array[0]) + " variance=" + df.format(((PVector) mmc.param[0]).array[1]) + " weight=" + df.format(mmc.weight[0]));
-        Logger.getRootLogger().debug("Initial model of correct dist., mean=" + df.format(((PVector) mmc.param[1]).array[0]) + " variance=" + df.format(((PVector) mmc.param[1]).array[1]) + " weight=" + df.format(mmc.weight[1]));
+        LogManager.getRootLogger().debug("----------------------------------------------------------------------------------------");
+        LogManager.getRootLogger().debug("No. of modeling points=" + TargetEmpiricalDist.getN());
+        LogManager.getRootLogger().debug("ID hits mean=" + df.format(IDEmpiricalDist.getMean()));
+        LogManager.getRootLogger().debug("Decoy hits mean=" + df.format(DecoyEmpiricalDist.getMean()));
+        LogManager.getRootLogger().debug("Initial model of incorrect dist., mean=" + df.format(((PVector) mmc.param[0]).array[0]) + " variance=" + df.format(((PVector) mmc.param[0]).array[1]) + " weight=" + df.format(mmc.weight[0]));
+        LogManager.getRootLogger().debug("Initial model of correct dist., mean=" + df.format(((PVector) mmc.param[1]).array[0]) + " variance=" + df.format(((PVector) mmc.param[1]).array[1]) + " weight=" + df.format(mmc.weight[1]));
     }
 
     private double IniCorrectKDELookUp(double x) {

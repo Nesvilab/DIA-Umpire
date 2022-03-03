@@ -27,7 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * pepXML writer for targeted re-extraction
@@ -59,7 +59,7 @@ public class TargetHitPepXMLWriter {
 
     public void write() throws IOException {
 
-        Logger.getRootLogger().info("Writing "+Filename);
+        LogManager.getRootLogger().info("Writing "+Filename);
         int minlength = Integer.MAX_VALUE;
         int maxlength = 0;
         int maxmiss = 0;
@@ -93,7 +93,7 @@ public class TargetHitPepXMLWriter {
             if (bestscore!=null) {
                 ArrayList<ParentProtein> parentprots = new ArrayList<>();
                 if (!fastaparser.PeptideList.containsKey(Sequence)) {
-                    //Logger.getRootLogger().warn(Sequence + " is not found as tryptic peptides in " + Fasta + ". Searching in protein sequences..");
+                    //LogManager.getRootLogger().warn(Sequence + " is not found as tryptic peptides in " + Fasta + ". Searching in protein sequences..");
                     for (String acc : fastaparser.ProteinList.keySet()) {
                         String ProtSeq = fastaparser.ProteinList.get(acc).Seq;
                         if (ProtSeq.contains(Sequence)) {
@@ -132,7 +132,7 @@ public class TargetHitPepXMLWriter {
                 }
 
                 if (parentprots.isEmpty()) {
-                    Logger.getRootLogger().warn(Sequence + " is not found in " + Fasta);
+                    LogManager.getRootLogger().warn(Sequence + " is not found in " + Fasta);
                 } else {
                     sb.append("<spectrum_query spectrum=\"" +FilenameUtils.getBaseName(Filename)+"."+ index+"."+ index+"."+match.pepIonID.Charge+ "\" start_scan=\""+index+"\" end_scan=\""+index+"\" precursor_neutral_mass=\"" + bestscore.PrecursorNeutralMass+ "\" assumed_charge=\"" + match.pepIonID.Charge + "\" index=\"" + (index++) + "\" retention_time_sec=\"" +bestscore.PrecursorRT* 60f + "\">\n"
                             + "<search_result>\n"
@@ -180,7 +180,7 @@ public class TargetHitPepXMLWriter {
              if (bestscore!=null) {
                 ArrayList<ParentProtein> parentprots = new ArrayList<>();
                 if (!fastaparser.PeptideList.containsKey(Sequence)) {
-                    //Logger.getRootLogger().warn(Sequence + " is not found as tryptic peptides in " + Fasta + ". Searching in protein sequences..");
+                    //LogManager.getRootLogger().warn(Sequence + " is not found as tryptic peptides in " + Fasta + ". Searching in protein sequences..");
                     for (String acc : fastaparser.ProteinList.keySet()) {
                         String ProtSeq = fastaparser.ProteinList.get(acc).Seq;
                         if (ProtSeq.contains(Sequence)) {
@@ -219,7 +219,7 @@ public class TargetHitPepXMLWriter {
                 }
 
                 if (parentprots.isEmpty()) {
-                    Logger.getRootLogger().warn(Sequence + " is not found in " + Fasta);
+                    LogManager.getRootLogger().warn(Sequence + " is not found in " + Fasta);
                 } else {
                     sb.append("<spectrum_query spectrum=\""+Decoytag+"_" + Sequence+ "\" precursor_neutral_mass=\"" + bestscore.PrecursorNeutralMass + "\" assumed_charge=\"" + match.pepIonID.Charge + "\" index=\"" + (index++) + "\" retention_time_sec=\"" +bestscore.PrecursorRT* 60f + "\">\n"
                             + "<search_result>\n"

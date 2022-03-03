@@ -40,7 +40,7 @@ import java.util.zip.Deflater;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
@@ -678,14 +678,14 @@ public final class mzXMLParser  extends SpectrumParserBase{
      //Wirte seralization file for scan index
     private void FSScanPosWrite() {
         try {
-            Logger.getRootLogger().debug("Writing ScanPos to file:" + FilenameUtils.removeExtension(filename) + ".ScanPosFS..");
+            LogManager.getRootLogger().debug("Writing ScanPos to file:" + FilenameUtils.removeExtension(filename) + ".ScanPosFS..");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.removeExtension(filename) + ".ScanPosFS", false);
             FSTObjectOutput oos = new FSTObjectOutput(fout);
             oos.writeObject(ScanIndex);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
     
@@ -695,7 +695,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
             return false;
         }
         try {
-            Logger.getRootLogger().debug("Reading ScanPos:" + FilenameUtils.removeExtension(filename) + ".ScanPosFS...");
+            LogManager.getRootLogger().debug("Reading ScanPos:" + FilenameUtils.removeExtension(filename) + ".ScanPosFS...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.removeExtension(filename) + ".ScanPosFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             ScanIndex = (TreeMap<Integer, Long>) in.readObject();
@@ -704,8 +704,8 @@ public final class mzXMLParser  extends SpectrumParserBase{
             fileIn.close();
 
         } catch (Exception ex) {
-            Logger.getRootLogger().debug("ScanIndex serialization file failed");
-            //Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().debug("ScanIndex serialization file failed");
+            //LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
         return true;
@@ -770,7 +770,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
 
                 if (!indexexist && linecount > 10) {
                     fileHandler.close();
-                    Logger.getRootLogger().debug("File : " + filename + " doesn't have index. the processing will stop.");
+                    LogManager.getRootLogger().debug("File : " + filename + " doesn't have index. the processing will stop.");
                     System.exit(1);
                 }
 
@@ -781,9 +781,9 @@ public final class mzXMLParser  extends SpectrumParserBase{
                         index = index + 2147483647l + 2147483648l;
                     }
                     if (ScanIndex.containsKey(scanNo + 1) && ScanIndex.get(scanNo + 1) == index) {
-                        Logger.getRootLogger().debug("File : " + filename + " index is not correct, ScanNo:" + scanNo + " and " + scanNo + 1 + " have same index");
-                        Logger.getRootLogger().debug("Please use indexmzXML from  TPP package to fix incorrect index of the mzXML file.");
-                        Logger.getRootLogger().debug("command: indexmzXML filename.mzXML");
+                        LogManager.getRootLogger().debug("File : " + filename + " index is not correct, ScanNo:" + scanNo + " and " + scanNo + 1 + " have same index");
+                        LogManager.getRootLogger().debug("Please use indexmzXML from  TPP package to fix incorrect index of the mzXML file.");
+                        LogManager.getRootLogger().debug("command: indexmzXML filename.mzXML");
                         System.exit(1);
                     }
                     ScanIndex.put(scanNo, index);
@@ -909,7 +909,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                             } else if (datatype == SpectralDataType.DataType.DIA_F_Window || datatype == SpectralDataType.DataType.pSMART || datatype == SpectralDataType.DataType.WiSIM) {
                                 int stopidx = temp.indexOf("</precursorMz>");
                                 if (stopidx == -1) {
-                                    Logger.getRootLogger().error("Parsing </precursorMz> failed. scan number :" + scanno);                                    
+                                    LogManager.getRootLogger().error("Parsing </precursorMz> failed. scan number :" + scanno);                                    
                                     System.exit(3);
                                 }
                                 int startidx = 0;
@@ -975,7 +975,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                         }
                     }
                 } else {
-                    Logger.getRootLogger().error("index of mzXML error");
+                    LogManager.getRootLogger().error("index of mzXML error");
                     System.exit(1);
                 }
                 ElutionTimeToScanNoMap.put(rt, scanno);
@@ -991,7 +991,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
     @Override
     public ScanCollection GetScanDIAMS2(XYData DIAWindow, boolean IncludePeak, float startTime, float endTime) {
         if (dIA_Setting == null) {
-            Logger.getRootLogger().error(filename + " is not DIA data");
+            LogManager.getRootLogger().error(filename + " is not DIA data");
             return null;
         }
         ScanCollection swathScanCollection = new ScanCollection(parameter.Resolution);
@@ -1023,7 +1023,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
     @Override
     public ScanCollection GetScanCollectionMS1Window(XYData MS1Window, boolean IncludePeak, float startTime, float endTime)  {
         if (dIA_Setting == null) {
-            Logger.getRootLogger().error(filename + " is not DIA data");
+            LogManager.getRootLogger().error(filename + " is not DIA data");
             return null;
         }
         ScanCollection MS1WindowScanCollection = new ScanCollection(parameter.Resolution);
@@ -1107,7 +1107,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                         }
                     }
                 } catch (Exception ex) {
-                    Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                    LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
                 }
             }
         }
@@ -1124,7 +1124,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
 //        try {
 //            executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 //        } catch (InterruptedException e) {
-//            Logger.getRootLogger().info("interrupted..");
+//            LogManager.getRootLogger().info("interrupted..");
 //        }
         return ScanList;
     }
@@ -1132,7 +1132,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
     @Override
     public ScanCollection GetAllScanCollectionByMSLabel(boolean MS1Included, boolean MS2Included, boolean MS1Peak, boolean MS2Peak, float startTime, float endTime) {
         ScanCollection scanCollection = InitializeScanCollection();
-        Logger.getRootLogger().debug("Memory usage before loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB (" + NoCPUs + " threads)");
+        LogManager.getRootLogger().debug("Memory usage before loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB (" + NoCPUs + " threads)");
 
 //        ArrayList<Integer> IncludedScans = new ArrayList<>();
         final IntArrayList IncludedScans = new IntArrayList();
@@ -1173,7 +1173,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
         ScanList = null;
         
         System.gc();
-        Logger.getRootLogger().debug("Memory usage after loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB");
+        LogManager.getRootLogger().debug("Memory usage after loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB");
         return scanCollection;
     }
  

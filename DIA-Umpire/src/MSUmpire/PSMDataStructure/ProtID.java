@@ -26,7 +26,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Protein ID data structure
@@ -78,10 +79,10 @@ public class ProtID implements Serializable {
             if (Sequence != null) {
                 newprotein.SetSequence(Sequence);
             } else {
-                Logger.getRootLogger().error("Sequence of protein:" + getAccNo() + " is null");
+                LogManager.getRootLogger().error("Sequence of protein:" + getAccNo() + " is null");
             }
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
         newprotein.Description = Description;
         newprotein.Mass = Mass;

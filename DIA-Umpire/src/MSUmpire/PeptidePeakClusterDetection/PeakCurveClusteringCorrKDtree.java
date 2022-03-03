@@ -36,7 +36,8 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import net.sf.javaml.core.kdtree.KDTree;
 import net.sf.javaml.core.kdtree.KeySizeException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Isotope peak curve clustering based on peak profile correlation. The searching is using KD tree
@@ -84,7 +85,7 @@ public class PeakCurveClusteringCorrKDtree implements Callable<ArrayList<PeakClu
             StringWriter w = new StringWriter();
             PrintWriter pw = new PrintWriter(w);
             ex.printStackTrace(pw);
-            Logger.getRootLogger().error(w.toString());
+            LogManager.getRootLogger().error(w.toString());
         }
         if(found==null || found.length==0){
             return ResultClusters;
@@ -158,7 +159,7 @@ public class PeakCurveClusteringCorrKDtree implements Callable<ArrayList<PeakClu
                                 StringWriter w = new StringWriter();
                                 PrintWriter pw = new PrintWriter(w);
                                 ex.printStackTrace(pw);
-                                Logger.getRootLogger().error(w.toString());
+                                LogManager.getRootLogger().error(w.toString());
                             }
                             if (Float.isNaN(corr)) {
                                 corr = 0f;

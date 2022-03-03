@@ -27,7 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -68,7 +70,7 @@ public class PTMManager {
         if (!ptmFactory.getDefaultModifications().isEmpty()) {
             SaveTempFile();
         } else {
-            Logger.getRootLogger().error("Modification map file is empty");
+            LogManager.getRootLogger().error("Modification map file is empty");
         }
     }
 
@@ -94,7 +96,7 @@ public class PTMManager {
                 SaveTempFile();
             }
             else{
-                Logger.getRootLogger().error("Modification map file is empty");;
+                LogManager.getRootLogger().error("Modification map file is empty");;
             }
         }        
     }

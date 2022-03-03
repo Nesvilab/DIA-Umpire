@@ -38,8 +38,8 @@ import java.util.zip.DataFormatException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 /**
@@ -63,12 +63,11 @@ public class DIA_Umpire_SE {
             System.out.println("To fix DIA setting, use : java -jar -Xmx8G DIA_Umpire_SE.jar mzMXL_file diaumpire_se.params -f");
             return;
         }
-        try {
+        {
             //Define logger level for console
             ConsoleLogger.SetConsoleLogger(Level.INFO);
             //Define logger level and file path for text log file
             ConsoleLogger.SetFileLogger(Level.DEBUG, FilenameUtils.getFullPath(args[0]) + "diaumpire_se.log");
-        } catch (Exception e) {
         }
 
         boolean Fix = false;
@@ -79,9 +78,9 @@ public class DIA_Umpire_SE {
         }
         String parameterfile = args[1];
         String MSFilePath = args[0];
-        Logger.getRootLogger().info("Version: " + UmpireInfo.GetInstance().Version);
-        Logger.getRootLogger().info("Parameter file:" + parameterfile);
-        Logger.getRootLogger().info("Spectra file:" + MSFilePath);
+        LogManager.getRootLogger().info("Version: " + UmpireInfo.GetInstance().Version);
+        LogManager.getRootLogger().info("Parameter file:" + parameterfile);
+        LogManager.getRootLogger().info("Spectra file:" + MSFilePath);
         BufferedReader reader = new BufferedReader(new FileReader(parameterfile));
 
         String line = "";
@@ -101,7 +100,7 @@ public class DIA_Umpire_SE {
 
         //<editor-fold defaultstate="collapsed" desc="Read parameter file">
         while ((line = reader.readLine()) != null) {
-            Logger.getRootLogger().info(line);
+            LogManager.getRootLogger().info(line);
             if (!"".equals(line) && !line.startsWith("#")) {
                 //System.out.println(line);
                 if (line.equals("==window setting begin")) {
@@ -349,8 +348,8 @@ public class DIA_Umpire_SE {
             File MSFile = new File(MSFilePath);
             if (MSFile.exists()) {
                 long time = System.currentTimeMillis();
-                Logger.getRootLogger().info("=================================================================================================");
-                Logger.getRootLogger().info("Processing " + MSFilePath + "....");
+                LogManager.getRootLogger().info("=================================================================================================");
+                LogManager.getRootLogger().info("Processing " + MSFilePath + "....");
                 
                 //Initialize a DIA file data structure                
                 DIAPack DiaFile = new DIAPack(MSFile.getAbsolutePath(), NoCPUs);
@@ -375,19 +374,19 @@ public class DIA_Umpire_SE {
                 }
                 DiaFile.ExportPrecursorPeak = ExportPrecursorPeak;
                 DiaFile.ExportFragmentPeak = ExportFragmentPeak;
-                Logger.getRootLogger().info("Module A: Signal extraction");
+                LogManager.getRootLogger().info("Module A: Signal extraction");
                 //Start DIA signal extraction process to generate pseudo MS/MS files
                 DiaFile.process();
                 time = System.currentTimeMillis() - time;
-                Logger.getRootLogger().info(MSFilePath + " processed time:" + String.format("%d hour, %d min, %d sec", TimeUnit.MILLISECONDS.toHours(time), TimeUnit.MILLISECONDS.toMinutes(time) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)), TimeUnit.MILLISECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))));
+                LogManager.getRootLogger().info(MSFilePath + " processed time:" + String.format("%d hour, %d min, %d sec", TimeUnit.MILLISECONDS.toHours(time), TimeUnit.MILLISECONDS.toMinutes(time) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)), TimeUnit.MILLISECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))));
             }else{
                 throw new RuntimeException("file: “"+MSFile+"” does not exist!");
             }
-            Logger.getRootLogger().info("Job complete");
-            Logger.getRootLogger().info("=================================================================================================");
+            LogManager.getRootLogger().info("Job complete");
+            LogManager.getRootLogger().info("=================================================================================================");
 
         } catch (Exception e) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(e));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }

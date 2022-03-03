@@ -30,7 +30,8 @@ import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Thread unit for determining  peak cluster matched fragments for identified peptide ion for quantification
@@ -86,7 +87,7 @@ public class DIAAssignQuantUnit implements Runnable {
             MatchFragmentByTargetCluster(targetCluster);
             pepIonID.RemoveRedundantFrag();
             if (pepIonID.FragmentPeaks.isEmpty() && Math.max(pepIonID.MaxProbability, pepIonID.TargetedProbability()) > 0.8f) {
-                Logger.getRootLogger().warn("Warning: " + pepIonID.ModSequence + "(MaxProb: " + pepIonID.MaxProbability + ") does not have matched fragment in "+FilenameUtils.getBaseName(ms1lcms.ParentmzXMLName));
+                LogManager.getRootLogger().warn("Warning: " + pepIonID.ModSequence + "(MaxProb: " + pepIonID.MaxProbability + ") does not have matched fragment in "+FilenameUtils.getBaseName(ms1lcms.ParentmzXMLName));
                 //MatchFragment();
             }
             pepIonID.ClearPepFragFactory();

@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.concurrent.*;
 import java.util.zip.DataFormatException;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 import uk.ac.ebi.jmzml.model.mzml.Spectrum;
 import uk.ac.ebi.jmzml.xml.io.MzMLObjectIterator;
@@ -65,13 +66,13 @@ public final class mzMLParser extends SpectrumParserBase{
     }
     
     private void ParseAllScans() {
-        Logger.getRootLogger().info("Using MzMLUnmarshaller....");
+        LogManager.getRootLogger().info("Using MzMLUnmarshaller....");
         MzMLUnmarshaller unmarshaller = new MzMLUnmarshaller(new File(filename));
         MzMLObjectIterator<Spectrum> itr = unmarshaller.unmarshalCollectionFromXpath("/run/spectrumList/spectrum", Spectrum.class);        
         ArrayList<mzMLSpecConverter> ScanList=new ArrayList<>();        
         ExecutorService executorPool = null;
         executorPool = Executors.newFixedThreadPool(NoCPUs);
-        Logger.getRootLogger().info("Starting to convert from jmzspec");
+        LogManager.getRootLogger().info("Starting to convert from jmzspec");
         while (itr.hasNext()) {
             Spectrum jmzSpec = itr.next();
             mzMLSpecConverter converter=new mzMLSpecConverter(jmzSpec,parameter);
@@ -82,10 +83,10 @@ public final class mzMLParser extends SpectrumParserBase{
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
         
-        Logger.getRootLogger().info("Building elution time and scan index");
+        LogManager.getRootLogger().info("Building elution time and scan index");
         for (mzMLSpecConverter converter : ScanList) {
             ScanData spec = converter.spec;
             scanCollection.AddScan(spec);
@@ -136,7 +137,7 @@ public final class mzMLParser extends SpectrumParserBase{
     @Override
     public ScanCollection GetScanDIAMS2(XYData DIAWindow, boolean IncludePeak, float startTime, float endTime) {
         if (dIA_Setting == null) {
-            Logger.getRootLogger().error(filename + " is not DIA data");
+            LogManager.getRootLogger().error(filename + " is not DIA data");
             return null;
         }
         CheckStatus();
@@ -161,7 +162,7 @@ public final class mzMLParser extends SpectrumParserBase{
     public ScanCollection GetAllScanCollectionByMSLabel(boolean MS1Included, boolean MS2Included, boolean MS1Peak, boolean MS2Peak, float startTime, float endTime) {
        CheckStatus();
         ScanCollection newscanCollection = InitializeScanCollection();
-        Logger.getRootLogger().debug("Memory usage before loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB (" + NoCPUs + " threads)");
+        LogManager.getRootLogger().debug("Memory usage before loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB (" + NoCPUs + " threads)");
 
         ArrayList<Integer> IncludedScans = new ArrayList<>();
         
@@ -188,14 +189,14 @@ public final class mzMLParser extends SpectrumParserBase{
             }
         }        
         System.gc();
-        Logger.getRootLogger().debug("Memory usage after loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB");
+        LogManager.getRootLogger().debug("Memory usage after loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB");
         return newscanCollection;
     }
     
     @Override
     public ScanCollection GetScanCollectionMS1Window(XYData MS1Window, boolean IncludePeak, float startTime, float endTime)  {
         if (dIA_Setting == null) {
-            Logger.getRootLogger().error(filename + " is not DIA data");
+            LogManager.getRootLogger().error(filename + " is not DIA data");
             return null;
         }
         CheckStatus();
@@ -221,7 +222,7 @@ public final class mzMLParser extends SpectrumParserBase{
             }
         }        
         System.gc();
-        Logger.getRootLogger().debug("Memory usage after loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB");
+        LogManager.getRootLogger().debug("Memory usage after loading scans:" + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "MB");
         return MS1WindowScanCollection;
     }
     

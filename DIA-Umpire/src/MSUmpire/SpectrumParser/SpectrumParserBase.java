@@ -29,12 +29,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
@@ -83,7 +82,7 @@ public abstract class SpectrumParserBase {
         else if (filename.toLowerCase().endsWith("mzml") || filename.toLowerCase().endsWith("raw"))
             return new mzXMLParser(mzXMLParser.to_mzXML(filename, NoCPUs),
                     parameter, datatype, dIA_Setting, NoCPUs);
-        Logger.getRootLogger().error("The spectral lfile: "+filename +" is not supported.");
+        LogManager.getRootLogger().error("The spectral lfile: "+filename +" is not supported.");
         return null;
     }
     
@@ -98,60 +97,60 @@ public abstract class SpectrumParserBase {
     
     protected void FSElutionIndexWrite() throws IOException {
         try {
-            Logger.getRootLogger().debug("Writing RTidx to file:" + FilenameUtils.removeExtension(filename) + ".RTidxFS..");
+            LogManager.getRootLogger().debug("Writing RTidx to file:" + FilenameUtils.removeExtension(filename) + ".RTidxFS..");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.removeExtension(filename) + ".RTidxFS", false);
             FSTObjectOutput oos = new FSTObjectOutput(fout);
             oos.writeObject(ElutionTimeToScanNoMap);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
 
         try {
-            Logger.getRootLogger().debug("Writing Scanidx to file:" + FilenameUtils.removeExtension(filename) + ".ScanidxFS..");
+            LogManager.getRootLogger().debug("Writing Scanidx to file:" + FilenameUtils.removeExtension(filename) + ".ScanidxFS..");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.removeExtension(filename) + ".ScanidxFS", false);
             FSTObjectOutput oos = new FSTObjectOutput(fout);
             oos.writeObject(MsLevelList);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
 
         try {
-            Logger.getRootLogger().debug("Writing ScanRT to file:" + FilenameUtils.removeExtension(filename) + ".ScanRTFS..");
+            LogManager.getRootLogger().debug("Writing ScanRT to file:" + FilenameUtils.removeExtension(filename) + ".ScanRTFS..");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.removeExtension(filename) + ".ScanRTFS", false);
             FSTObjectOutput oos = new FSTObjectOutput(fout);
             oos.writeObject(ScanToElutionTime);
             oos.close();
             fout.close();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
 
         if (datatype !=  SpectralDataType.DataType.DDA) {
             try {
-                Logger.getRootLogger().debug("Writing DIAWindows to file:" + FilenameUtils.removeExtension(filename) + ".DIAWindowsFS..");
+                LogManager.getRootLogger().debug("Writing DIAWindows to file:" + FilenameUtils.removeExtension(filename) + ".DIAWindowsFS..");
                 FileOutputStream fout = new FileOutputStream(FilenameUtils.removeExtension(filename) + ".DIAWindowsFS", false);
                 FSTObjectOutput oos = new FSTObjectOutput(fout);
                 oos.writeObject(dIA_Setting.DIAWindows);
                 oos.close();
                 fout.close();
             } catch (Exception ex) {
-                Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             }
         }
          if (datatype ==  SpectralDataType.DataType.WiSIM) {
             try {
-                Logger.getRootLogger().debug("Writing MS1 windows to file:" + FilenameUtils.removeExtension(filename) + ".MS1WindowsFS..");
+                LogManager.getRootLogger().debug("Writing MS1 windows to file:" + FilenameUtils.removeExtension(filename) + ".MS1WindowsFS..");
                 FileOutputStream fout = new FileOutputStream(FilenameUtils.removeExtension(filename) + ".MS1WindowsFS", false);
                 FSTObjectOutput oos = new FSTObjectOutput(fout);
                 oos.writeObject(dIA_Setting.MS1Windows);
                 oos.close();
                 fout.close();
             } catch (Exception ex) {
-                Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             }
         }
     }
@@ -167,7 +166,7 @@ public abstract class SpectrumParserBase {
             return false;
         }
         try {
-            Logger.getRootLogger().debug("Reading RTidx:" + FilenameUtils.removeExtension(filename) + ".RTidxFS...");
+            LogManager.getRootLogger().debug("Reading RTidx:" + FilenameUtils.removeExtension(filename) + ".RTidxFS...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.removeExtension(filename) + ".RTidxFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             ElutionTimeToScanNoMap = (TreeMap<Float, Integer>) in.readObject();
@@ -176,13 +175,13 @@ public abstract class SpectrumParserBase {
             fileIn.close();
         } catch (Exception ex) {
             //i.printStackTrace();
-            Logger.getRootLogger().debug("RTidxFS serialization file failed");
-            //Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().debug("RTidxFS serialization file failed");
+            //LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
 
         try {
-            Logger.getRootLogger().debug("Reading ScanRT:" + FilenameUtils.removeExtension(filename) + ".ScanRTFS...");
+            LogManager.getRootLogger().debug("Reading ScanRT:" + FilenameUtils.removeExtension(filename) + ".ScanRTFS...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.removeExtension(filename) + ".ScanRTFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
 //            ScanToElutionTime = (HashMap<Integer, Float>) in.readObject();
@@ -191,13 +190,13 @@ public abstract class SpectrumParserBase {
             fileIn.close();
         } catch (Exception ex) {
             //i.printStackTrace();
-            Logger.getRootLogger().debug("ScanRTFS serialization file failed");
-            //Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().debug("ScanRTFS serialization file failed");
+            //LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             throw new RuntimeException(ex);
         }
 
         try {
-            Logger.getRootLogger().debug("Reading Scanidx:" + FilenameUtils.removeExtension(filename) + ".ScanidxFS...");
+            LogManager.getRootLogger().debug("Reading Scanidx:" + FilenameUtils.removeExtension(filename) + ".ScanidxFS...");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.removeExtension(filename) + ".ScanidxFS");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             MsLevelList = (TreeMap<Integer, Integer>) in.readObject();
@@ -210,8 +209,8 @@ public abstract class SpectrumParserBase {
             fileIn.close();
         } catch (Exception ex) {
             //i.printStackTrace();
-            Logger.getRootLogger().debug("ScanidxFS serialization file failed");
-            //Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            LogManager.getRootLogger().debug("ScanidxFS serialization file failed");
+            //LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }
 
@@ -220,7 +219,7 @@ public abstract class SpectrumParserBase {
                 return false;
             }
             try {
-                Logger.getRootLogger().debug("Reading DIAWindows:" + FilenameUtils.removeExtension(filename) + ".DIAWindowsFS...");
+                LogManager.getRootLogger().debug("Reading DIAWindows:" + FilenameUtils.removeExtension(filename) + ".DIAWindowsFS...");
                 FileInputStream fileIn = new FileInputStream(FilenameUtils.removeExtension(filename) + ".DIAWindowsFS");
                 FSTObjectInput in = new FSTObjectInput(fileIn);
                 dIA_Setting.DIAWindows = (TreeMap<XYData, ArrayList<Integer>>) in.readObject();
@@ -228,8 +227,8 @@ public abstract class SpectrumParserBase {
                 fileIn.close();
             } catch (Exception ex) {
                 //i.printStackTrace();
-                Logger.getRootLogger().debug("DIAWindowsFS serialization file failed");
-                //Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                LogManager.getRootLogger().debug("DIAWindowsFS serialization file failed");
+                //LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
                 return false;
             }
         }
@@ -239,7 +238,7 @@ public abstract class SpectrumParserBase {
                 return false;
             }
             try {
-                Logger.getRootLogger().debug("Reading MS1 Windows:" + FilenameUtils.removeExtension(filename) + ".MS1WindowsFS...");
+                LogManager.getRootLogger().debug("Reading MS1 Windows:" + FilenameUtils.removeExtension(filename) + ".MS1WindowsFS...");
                 FileInputStream fileIn = new FileInputStream(FilenameUtils.removeExtension(filename) + ".MS1WindowsFS");
                 FSTObjectInput in = new FSTObjectInput(fileIn);
                 dIA_Setting.MS1Windows = (TreeMap<XYData, ArrayList<Integer>>) in.readObject();
@@ -247,8 +246,8 @@ public abstract class SpectrumParserBase {
                 fileIn.close();
             } catch (Exception ex) {
                 //i.printStackTrace();
-                Logger.getRootLogger().debug("MS1WindowsFS serialization file failed");
-                //Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+                LogManager.getRootLogger().debug("MS1WindowsFS serialization file failed");
+                //LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
                 return false;
             }
         }
@@ -304,7 +303,7 @@ public abstract class SpectrumParserBase {
     //Get all the DIA MS2 scans according to a isolation window range
      public ScanCollection GetScanCollectionDIAMS2(XYData DIAWindow, boolean IncludePeak,float startRT, float endRT){
         if (dIA_Setting == null) {
-            Logger.getRootLogger().error("This is not DIA data" + filename);
+            LogManager.getRootLogger().error("This is not DIA data" + filename);
             return null;
         }
         return GetScanDIAMS2(DIAWindow, IncludePeak, startRT, endRT);
@@ -321,7 +320,7 @@ public abstract class SpectrumParserBase {
     //Get all the DIA MS1 scans according to MS1 m/z range, this was only for WiSIM data
     public ScanCollection GetScanCollectionMS1Window(XYData MS1Window, boolean IncludePeak) {
         if (dIA_Setting == null) {
-            Logger.getRootLogger().error("This is not DIA data" + filename);
+            LogManager.getRootLogger().error("This is not DIA data" + filename);
             return null;
         }
         return GetScanCollectionMS1Window(MS1Window, IncludePeak, 0f, 999999f);

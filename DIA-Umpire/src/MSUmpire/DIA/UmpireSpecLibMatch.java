@@ -34,7 +34,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Spectral matching to calculate subscores given a peptide ion from spectral library and a precursor-fragment group
@@ -210,12 +212,12 @@ public class UmpireSpecLibMatch implements Runnable, Serializable{
                     Decoy();
                 }
                 else{
-                    Logger.getRootLogger().error("decoy spectrum is null : "+pepIonID.GetKey());
+                    LogManager.getRootLogger().error("decoy spectrum is null : "+pepIonID.GetKey());
                 }
             }
         }
         else{
-            Logger.getRootLogger().warn("lib spectrum is null : "+pepIonID.GetKey());
+            LogManager.getRootLogger().warn("lib spectrum is null : "+pepIonID.GetKey());
         }
     }
 

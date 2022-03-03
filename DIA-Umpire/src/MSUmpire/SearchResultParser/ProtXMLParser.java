@@ -24,7 +24,8 @@ import com.vseravno.solna.SolnaParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -40,7 +41,7 @@ public class ProtXMLParser {
         this.SingleLCMSID = singleLCMSID;
         this.FileName = FileName;
         this.threshold = threshold;
-        Logger.getRootLogger().info("Parsing protXML: " + FileName + ".....");
+        LogManager.getRootLogger().info("Parsing protXML: " + FileName + ".....");
         ParseSAX();
         SingleLCMSID.DetermineAssignIonListByProtPepSeq();
         SingleLCMSID.FixProteinWithDecoyHead();
@@ -53,7 +54,7 @@ public class ProtXMLParser {
    private void ParseSAX() throws IOException {
         File fXmlFile = new File(FileName);
         if (!fXmlFile.exists()) {
-            Logger.getRootLogger().info("File :" + FileName + " cannot be found\n");
+            LogManager.getRootLogger().info("File :" + FileName + " cannot be found\n");
             return;
         }
         FileInputStream inputStream = new FileInputStream(FileName);

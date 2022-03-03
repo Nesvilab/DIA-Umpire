@@ -175,7 +175,7 @@ public class PeakCluster implements Serializable {
                 SNR[pkidx] = IsoPeaksCurves[pkidx].GetRawSNR();
             }
             else if (pkidx==1){
-                //Logger.getRootLogger().error("Failed to get SNR");
+                //LogManager.getRootLogger().error("Failed to get SNR");
             }
         }
         return SNR[pkidx];

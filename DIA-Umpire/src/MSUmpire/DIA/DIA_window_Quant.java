@@ -29,7 +29,8 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
 
 /**
  * For a given isolation window, extract grouped fragments for all peptide ions in the isolation window 
@@ -64,7 +65,7 @@ public class DIA_window_Quant implements  Runnable{
     public void run() {
        
         if(!DIAWindow.ReadPeakCluster()){
-            Logger.getRootLogger().error("Reading Peak cluster result for " + DIAWindow.ScanCollectionName + " failed");
+            LogManager.getRootLogger().error("Reading Peak cluster result for " + DIAWindow.ScanCollectionName + " failed");
             return;
         }
         ExecutorService executorPool;
@@ -82,11 +83,11 @@ public class DIA_window_Quant implements  Runnable{
         try {
             executorPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Logger.getRootLogger().info("interrupted..");
+            LogManager.getRootLogger().info("interrupted..");
         }
         if (DIAWindow.datattype != SpectralDataType.DataType.pSMART) {
             if (!DIAWindow.ReadPrecursorFragmentClu2Cur()) {
-                Logger.getRootLogger().error("Reading precursor-fragment results for " + DIAWindow.ScanCollectionName + " failed");
+                LogManager.getRootLogger().error("Reading precursor-fragment results for " + DIAWindow.ScanCollectionName + " failed");
                 return;
             }
 

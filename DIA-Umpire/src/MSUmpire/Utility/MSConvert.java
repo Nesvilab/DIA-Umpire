@@ -23,7 +23,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -40,13 +41,13 @@ public class MSConvert {
         try {
             String[] msconvertcmd = {msconvertpath, "--mzXML", "--32", "-z", SpectrumPath, "-o", FilenameUtils.getFullPath(SpectrumPath)};
             Process p = Runtime.getRuntime().exec(msconvertcmd);
-            Logger.getRootLogger().info("MGF file coversion by msconvert.exe...." + SpectrumPath);
-            Logger.getRootLogger().debug("Command: " + Arrays.toString(msconvertcmd));
+            LogManager.getRootLogger().info("MGF file coversion by msconvert.exe...." + SpectrumPath);
+            LogManager.getRootLogger().debug("Command: " + Arrays.toString(msconvertcmd));
             PrintThread printThread = new PrintThread(p);
             printThread.start();
             p.waitFor();
             if (p.exitValue() != 0) {
-                Logger.getRootLogger().info("msconvert : " + SpectrumPath + " failed");
+                LogManager.getRootLogger().info("msconvert : " + SpectrumPath + " failed");
                 //PrintOutput(p);
                 return;
             }

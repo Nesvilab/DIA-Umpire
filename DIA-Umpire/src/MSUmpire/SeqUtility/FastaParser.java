@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 
@@ -87,7 +88,7 @@ public class FastaParser implements Serializable{
         try {
             Parse(filename);
         } catch (IOException ex) {
-           Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+           LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
         }
     }
     
@@ -99,14 +100,14 @@ public class FastaParser implements Serializable{
         }
         FastaParser fastareader=null;
         try {
-            org.apache.log4j.Logger.getRootLogger().info("Loading fasta serialization to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename)+ ".FastaSer..");
+            org.apache.logging.log4j.LogManager.getRootLogger().info("Loading fasta serialization to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename)+ ".FastaSer..");
             FileInputStream fileIn = new FileInputStream(FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename)+ ".FastaSer");
             FSTObjectInput in = new FSTObjectInput(fileIn);
             fastareader = (FastaParser) in.readObject();
             in.close();
             fileIn.close();
         } catch (Exception ex) {
-            org.apache.log4j.Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            org.apache.logging.log4j.LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return null;
         }
         
@@ -115,14 +116,14 @@ public class FastaParser implements Serializable{
 
     public boolean FasterSerialzationWrite(String Filename) throws FileNotFoundException {
         try {
-            org.apache.log4j.Logger.getRootLogger().info("Writing fasta serialization to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename)+ ".FastaSer...");
+            org.apache.logging.log4j.LogManager.getRootLogger().info("Writing fasta serialization to file:" + FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename)+ ".FastaSer...");
             FileOutputStream fout = new FileOutputStream(FilenameUtils.getFullPath(Filename) + FilenameUtils.getBaseName(Filename)+ ".FastaSer", false);
             FSTObjectOutput out = new FSTObjectOutput(fout);
             out.writeObject(this);
             out.close();
             fout.close();
         } catch (Exception ex) {
-            org.apache.log4j.Logger.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
+            org.apache.logging.log4j.LogManager.getRootLogger().error(ExceptionUtils.getStackTrace(ex));
             return false;
         }        
         return true;
@@ -131,7 +132,7 @@ public class FastaParser implements Serializable{
     private void Parse(String filename) throws FileNotFoundException, IOException {
 
         if(!new File(filename).exists()){
-            org.apache.log4j.Logger.getRootLogger().warn("Fasta file cannot be found: "+filename);
+            org.apache.logging.log4j.LogManager.getRootLogger().warn("Fasta file cannot be found: "+filename);
         }
         BufferedReader reader = new BufferedReader(new FileReader(filename));
         String line = "";

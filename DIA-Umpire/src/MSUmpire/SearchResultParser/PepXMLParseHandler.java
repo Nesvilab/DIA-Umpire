@@ -25,15 +25,13 @@ import MSUmpire.PSMDataStructure.ModificationInfo;
 import MSUmpire.PSMDataStructure.PSM;
 import MSUmpire.PSMDataStructure.PTMManager;
 import com.compomics.util.experiment.biology.AminoAcid;
-import com.compomics.util.experiment.biology.AminoAcidPattern;
-import com.compomics.util.experiment.biology.AminoAcidSequence;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.vseravno.solna.SolnaHandler;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -108,7 +106,7 @@ public class PepXMLParseHandler implements SolnaHandler<Element> {
                         if (Math.abs(massdiff2 + 17.0265) < 0.01 && Math.abs(mass - 143.0041f) < 0.001 && "C".equals(site)) {
                             CheckAndAddModification(site, massdiff);
                         } else {
-                            Logger.getRootLogger().warn("Warning! modification in pepxml : amino acid " + site + "(mass: " + mass + ", massdiff:" + massdiff2 + ") ignored.");
+                            LogManager.getRootLogger().warn("Warning! modification in pepxml : amino acid " + site + "(mass: " + mass + ", massdiff:" + massdiff2 + ") ignored.");
                         }
                     }
                 }
@@ -133,9 +131,9 @@ public class PepXMLParseHandler implements SolnaHandler<Element> {
     private void CheckAndAddModification(String site, float massdiff) throws IOException {
         PTM ptm = PTMManager.GetInstance().GetPTM(site, massdiff);
         if (ptm == null) {
-            Logger.getRootLogger().warn("Warning! modification in pepxml : amino acid " + site + "(mass diff:" + massdiff + ") cannot be found in the library.");
+            LogManager.getRootLogger().warn("Warning! modification in pepxml : amino acid " + site + "(mass diff:" + massdiff + ") cannot be found in the library.");
             massdiff= (float) (Math.floor(massdiff*10)/10);
-            Logger.getRootLogger().warn("Creating a custom modification type called \"" + massdiff + "@" + site + "\"");
+            LogManager.getRootLogger().warn("Creating a custom modification type called \"" + massdiff + "@" + site + "\"");
             ArrayList<String> list = new ArrayList<>();
             list.add(site);
             ptm = new PTM(PTM.MODAA, massdiff + "@" + site, (double) massdiff, list);
@@ -322,7 +320,7 @@ public class PepXMLParseHandler implements SolnaHandler<Element> {
                 psmid.Modifications.add(new ModificationMatch(matchmod.modification.getName(), true, 1));
                 modseq = ModStringConvert.AddModIntoSeqBeforeSite(modseq, matchmod.GetKey(), -1);
             } else {
-                Logger.getRootLogger().warn("Modification [" + mass + " @ nterm] for spectrum: " + psmid.SpecNumber + " not found in the library:");
+                LogManager.getRootLogger().warn("Modification [" + mass + " @ nterm] for spectrum: " + psmid.SpecNumber + " not found in the library:");
             }
         }
         if (node.getAttributes().getNamedItem("mod_cterm_mass") != null) {
@@ -345,7 +343,7 @@ public class PepXMLParseHandler implements SolnaHandler<Element> {
                 psmid.Modifications.add(new ModificationMatch(matchmod.modification.getName(), true, psmid.Sequence.length()));
                 modseq = ModStringConvert.AddModIntoSeqBeforeSite(modseq, matchmod.GetKey(), psmid.Sequence.length() - 1);
             } else {
-                Logger.getRootLogger().warn("Modification [" + mass + " @ cterm] for spectrum: " + psmid.SpecNumber + " not found in the library:");
+                LogManager.getRootLogger().warn("Modification [" + mass + " @ cterm] for spectrum: " + psmid.SpecNumber + " not found in the library:");
             }
         }
 
@@ -373,7 +371,7 @@ public class PepXMLParseHandler implements SolnaHandler<Element> {
                     psmid.Modifications.add(new ModificationMatch(matchmod.modification.getName(), true, idx));
                     modseq = ModStringConvert.AddModIntoSeqBeforeSite(modseq, matchmod.GetKey(), idx - 1);
                 } else {
-                    Logger.getRootLogger().warn("Modification [" + mass + " @ " + site + "] for spectrum: " + psmid.SpecNumber + " not found in the library:");
+                    LogManager.getRootLogger().warn("Modification [" + mass + " @ " + site + "] for spectrum: " + psmid.SpecNumber + " not found in the library:");
                 }
             }
         }

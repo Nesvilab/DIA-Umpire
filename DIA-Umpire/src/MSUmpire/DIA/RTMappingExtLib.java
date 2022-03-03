@@ -36,7 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -87,7 +87,7 @@ public class RTMappingExtLib implements Runnable{
         regression = new PiecewiseRegression(parameter.MaxCurveRTRange,parameter.MaxCurveRTRange);
         regression.SetData(points);
         float R2 = regression.GetR2();
-        Logger.getRootLogger().info("Retention time prediction model:(" + FilenameUtils.getBaseName(TargetLCMS.mzXMLFileName) + "..R2=" + R2 + "(No. of commonly identified peptide ions="+points.PointCount()+")");
+        LogManager.getRootLogger().info("Retention time prediction model:(" + FilenameUtils.getBaseName(TargetLCMS.mzXMLFileName) + "..R2=" + R2 + "(No. of commonly identified peptide ions="+points.PointCount()+")");
         
         GenerateRTMapPNG(xySeriesCollection, series, R2);
     }
@@ -121,7 +121,7 @@ public class RTMappingExtLib implements Runnable{
     }
 
     public void GenerateMappedPepIon() {
-        Logger.getRootLogger().info("Mapping peptide ions for " + FilenameUtils.getBaseName(TargetLCMS.mzXMLFileName) + "...");
+        LogManager.getRootLogger().info("Mapping peptide ions for " + FilenameUtils.getBaseName(TargetLCMS.mzXMLFileName) + "...");
 
         if(!regression.valid()){
             return;
@@ -160,7 +160,7 @@ public class RTMappingExtLib implements Runnable{
                 predictedPepIon.SetRTSD(predict.getZ());
             }
         }        
-        Logger.getRootLogger().info("No. of peptide ions added:"+cont);
+        LogManager.getRootLogger().info("No. of peptide ions added:"+cont);
     }
     
     @Override
