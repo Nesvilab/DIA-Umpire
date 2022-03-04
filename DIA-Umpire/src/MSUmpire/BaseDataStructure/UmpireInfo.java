@@ -26,7 +26,7 @@ package MSUmpire.BaseDataStructure;
 public class UmpireInfo {
 
     private static UmpireInfo umpireInfo = null;
-    public String Version = "v2.2.6";
+    public String Version = "v2.2.7";
 
     private UmpireInfo() {
 
