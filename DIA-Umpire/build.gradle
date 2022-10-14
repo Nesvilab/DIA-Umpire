@@ -5,7 +5,7 @@ plugins {
 
 
 group = "umich.nesvilab"
-version = '2.2.8'
+version = '2.2.9'
 
 
 java {
@@ -36,7 +36,6 @@ sourceSets {
 
 dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-//    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
 

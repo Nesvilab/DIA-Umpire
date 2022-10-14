@@ -68,3 +68,5 @@ task printJarLocations {
         configurations.compileClasspath.each { println it }
     }
 }
+
+// To package DIA-Umpire SE, run build and the jar file is in DIA-Umpire/DIA_Umpire_SE/build/libs
