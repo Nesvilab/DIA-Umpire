@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'umich.nesvilab'
-version = '2.2.9'
+version = '2.3.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
