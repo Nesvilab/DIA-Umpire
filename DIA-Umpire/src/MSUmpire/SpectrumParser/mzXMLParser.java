@@ -143,7 +143,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                 "    <run id=\"%s\" defaultInstrumentConfigurationRef=\"IC\">\n" +
                 "      <spectrumList count=\"%d\" defaultDataProcessingRef=\"pwiz_Reader_conversion\">\n";
         final String spectrum_indent = "        ";
-        final String spectrum_format_str = "<spectrum index=\"%d\" id=\"index=%d\" defaultArrayLength=\"%d\">\n" +
+        final String spectrum_format_str = "<spectrum index=\"%d\" id=\"controllerType=0 controllerNumber=1 scan=%d\" defaultArrayLength=\"%d\">\n" +
                 "          <cvParam cvRef=\"MS\" accession=\"MS:1000580\" name=\"MSn spectrum\" value=\"\"/>\n" +
                 "          <cvParam cvRef=\"MS\" accession=\"MS:1000511\" name=\"ms level\" value=\"2\"/>\n" +
                 "          <cvParam cvRef=\"MS\" accession=\"MS:1000127\" name=\"centroid spectrum\" value=\"\"/>\n" +
@@ -234,7 +234,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                         final String base64_intensity_array = Base64.getEncoder().encodeToString(bb.array());
                         final float base_peak_intensity = intensityarr.max();
                         final String spectrum_xml = spectrum_indent + String.format(spectrum_format_str,
-                                index, index, defaultArrayLength,
+                                index, index + 1, defaultArrayLength,
                                 title,
                                 mzarr.min(), mzarr.max(),
                                 intensityarr.sum(),
@@ -322,8 +322,8 @@ public final class mzXMLParser  extends SpectrumParserBase{
 
         final StringBuilder sb = new StringBuilder();
         for (int index = 0; index < spectrumList_count; index++) {
-            final String offset_xml = String.format("      <offset idRef=\"index=%d\">%d</offset>\n",
-                    index, index_spectrum_offset[index]);
+            final String offset_xml = String.format("      <offset idRef=\"controllerType=0 controllerNumber=1 scan=%d\">%d</offset>\n",
+                    index + 1, index_spectrum_offset[index]);
             sb.append(offset_xml);
         }
         sb.append(String.format("    </index>\n" +
@@ -376,7 +376,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                 "    <run id=\"%s\" defaultInstrumentConfigurationRef=\"IC\">\n" +
                 "      <spectrumList count=\"%d\" defaultDataProcessingRef=\"pwiz_Reader_conversion\">\n";
         final String spectrum_indent = "        ";
-        final String spectrum_format_str = "<spectrum index=\"%d\" id=\"index=%d\" defaultArrayLength=\"%d\">\n" +
+        final String spectrum_format_str = "<spectrum index=\"%d\" id=\"controllerType=0 controllerNumber=1 scan=%d\" defaultArrayLength=\"%d\">\n" +
                 "          <cvParam cvRef=\"MS\" accession=\"MS:1000580\" name=\"MSn spectrum\" value=\"\"/>\n" +
                 "          <cvParam cvRef=\"MS\" accession=\"MS:1000511\" name=\"ms level\" value=\"2\"/>\n" +
                 "          <cvParam cvRef=\"MS\" accession=\"MS:1000127\" name=\"centroid spectrum\" value=\"\"/>\n" +
@@ -481,7 +481,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
             final String base64_intensity_array = Base64.getEncoder().encodeToString(bb.array());
 
             final String spectrum_xml = spectrum_indent + String.format(spectrum_format_str,
-                    index, index, defaultArrayLength,
+                    index, index + 1, defaultArrayLength,
                     title,
                     mzarr.min(), mzarr.max(),
                     intensityarr.sum(),
@@ -514,8 +514,8 @@ public final class mzXMLParser  extends SpectrumParserBase{
 
         final StringBuilder sb = new StringBuilder();
         for (int index = 0; index < spectrumList_count; index++) {
-            final String offset_xml = String.format("      <offset idRef=\"index=%d\">%d</offset>\n",
-                    index, index_spectrum_offset[index]);
+            final String offset_xml = String.format("      <offset idRef=\"controllerType=0 controllerNumber=1 scan=%d\">%d</offset>\n",
+                    index + 1, index_spectrum_offset[index]);
             sb.append(offset_xml);
         }
         sb.append(String.format("    </index>\n" +
