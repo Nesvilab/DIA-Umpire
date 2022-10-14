@@ -610,7 +610,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
                 sb.append(String.format("      <precursorMz precursorIntensity=\"%f\"%s%s%s%s>%f</precursorMz>\n",
                         precursor.getIntensity() == null ? 0 : precursor.getIntensity(),
                         precursor.getParentScanNum() == null ? "" : String.format(" precursorScanNum=\"%d\"", precursor.getParentScanNum()),
-                        precursor.getActivationInfo().getActivationMethod() == null ? "" : String.format(" activationMethod=\"%s\"", precursor.getActivationInfo().getActivationMethod()),
+                        precursor.getActivationInfo().getActivationMethod() == null ? "" : String.format(" activationMethod=\"%s\"", precursor.getActivationInfo().getActivationMethod().name),
                         precursor.getCharge() == null ? "" : String.format(" precursorCharge=\"%d\"", precursor.getCharge()),
                         windowWideness == null ? "" : String.format(" windowWideness=\"%f\"", windowWideness),
                         precursor.getMzTargetMono()));
