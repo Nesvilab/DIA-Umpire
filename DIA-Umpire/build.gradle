@@ -1,3 +1,5 @@
+// To compile and package DIA-Umpire_SE, mvn clean shadowDistZip. The jar file is in "dia-umpire/DIA_Umpire_SE/build/libs".
+
 plugins {
     id 'java-library'
 //    id 'idea'
