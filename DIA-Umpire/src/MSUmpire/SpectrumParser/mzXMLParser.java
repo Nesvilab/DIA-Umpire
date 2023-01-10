@@ -566,6 +566,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
         scans.loadData(LCMSDataSubset.WHOLE_RUN);
         final TreeMap<Integer, IScan> num2scan = scans.getMapNum2scan();
         final Path ret = Paths.get(basename + ".mzXML");
+        Files.deleteIfExists(ret);
         ret.toFile().deleteOnExit();
         final OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(ret, StandardOpenOption.CREATE_NEW), StandardCharsets.ISO_8859_1);
         writer.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
