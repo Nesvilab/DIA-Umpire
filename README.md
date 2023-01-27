@@ -1,13 +1,44 @@
-**DIA-Umpire**: 
 
-Computational analysis for mass spectrometry-based proteomics data
+<img src="https://github.com/Nesvilab/DIA-Umpire/raw/gh-pages/Fig/DIA_Umpire_logo.jpg" width="200px" hspace="3px" align="left"/>
 
-The followings are the brief descriptions for each NetBeans project
+DIA-Umpire is an open source Java program for computational analysis of data independent acquisition (DIA) mass spectrometry-based proteomics data. It enables untargeted peptide and protein identification and quantitation using DIA data, and also incorporates targeted extraction to reduce the number of cases of missing quantitation. 
+
+<br>
+
+# Four Major Modules
+<img src="https://github.com/Nesvilab/DIA-Umpire/raw/gh-pages/Fig/Modules.jpg" align="center"/>
+
+<br>
+
+
+# Suggested workflow
+Depending on the scale of applications, three application scenarios which require different combinations of DIA-Umpire modules are described in our [user guides](https://github.com/Nesvilab/DIA-Umpire/blob/gh-pages/DIA_Umpire_Manual_v2.0.pdf).
+
+1. Identification only analysis (Steps A->B)
+
+2. Small scale identification and quantitation analysis with minimal computational costs (Steps A->B->D)
+
+3. Complete DIA-Umpire identification and quantitation analysis (Steps A->B->C->D)
+
+
+<br>
+
+
+
+# System Requirement
+DIA-Umpire is written in Java, which is cross operating system programming language. To execute DIA-Umpire, Java 7 or higher (download link:Java SE Runtime Environment 7) version is required. As a rule of thumb, it is recommended have at least double the amount of RAM as the average size of your mzXML files (mzXML written in 32-bit format without zlib compression). If mzXML is in 64-bit format, then RAM requirements should be approximately the size of the file.
+
+<br>
+
+
+# Other Usages
 
 **DIA_Umpire_SE**
 
 The first step of DIA-Umpire analysis. It is a signal extraction module to generate pseudo MS/MS spectra given a DIA file 
   * java -jar -Xmx8G DIA_Umpire_SE.jar mzMXL_file diaumpire.se_params
+
+<!---
 
 **DIA_Umpire_LCMSIDGen**
 
@@ -32,6 +63,8 @@ DIA-Umpire protein quantification module takes *LCMSID file as input, the output
 **DIA-Umpire_To_Skyline**
 
 Module to generate raw-intensity pseudo MS/MS spectra. (without intensity adjustments) 
+
+-->
 
 **DIA-Umpire**
 
