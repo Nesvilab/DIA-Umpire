@@ -55,8 +55,8 @@ dependencies {
     implementation 'org.jfree:jfreechart:1.0.19'
     implementation 'ca.umontreal.iro.simul:ssj:3.3.1'
 
-    // implementation 'com.github.chhh:batmass-io:1.28.5'
-    compileOnly 'com.github.chhh:batmass-io:1.28.5'
+    // implementation 'com.github.chhh:batmass-io:1.29.1'
+    compileOnly 'com.github.chhh:batmass-io:1.29.1'
     implementation 'org.apache.commons:commons-math3:3.6.1'
 
     implementation fileTree(dir: '../libs', include: '*.jar')
