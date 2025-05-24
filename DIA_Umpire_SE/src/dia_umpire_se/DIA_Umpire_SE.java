@@ -25,20 +25,14 @@ import MSUmpire.DIA.DIAPack;
 import MSUmpire.Utility.ConsoleLogger;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.DataFormatException;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -49,8 +43,14 @@ public class DIA_Umpire_SE {
     /**
      * @param args the command line arguments DIA_Umpire parameterfile
      */
-    public static void main(String[] args) throws InterruptedException, FileNotFoundException, ExecutionException, IOException, ParserConfigurationException, DataFormatException, SAXException, Exception {
+    public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
+
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            e.printStackTrace();
+            System.exit(1);
+        });
+
         if (org.burningwave.core.assembler.StaticComponentContainer.Modules != null)
             org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll(); // for FST serialization to work an Java 16 and above
         System.out.println("=================================================================================================");
