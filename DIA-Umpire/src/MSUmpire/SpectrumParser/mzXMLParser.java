@@ -247,7 +247,7 @@ public final class mzXMLParser  extends SpectrumParserBase{
             }
         }
 
-        int char_count = 0;
+        long char_count = 0;
         final int spectrumList_count = futures.size();
         final long[] index_spectrum_offset = new long[spectrumList_count];
         final String head_xml = String.format(head_format_str, run_id, run_id, spectrumList_count);
