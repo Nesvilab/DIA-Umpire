@@ -7,7 +7,7 @@ plugins {
 
 
 group = "umich.nesvilab"
-version = '2.3.3'
+version = '2.3.4'
 
 
 java {
