@@ -719,8 +719,27 @@ public final class mzXMLParser  extends SpectrumParserBase{
         try (final InputStream is = Files.newInputStream(Paths.get(this.filename));) {
             final LongArrayList offsets = Infer_mzXML_offsets.infer_mzXML_scanno(is);
             this.TotalScan = offsets.size();
-            for (int i=0;i<offsets.size()-1;++i){
-                this.ScanIndex.put(i+1,offsets.get(i));
+            // Empty spectra are omitted during mzML conversion, but retained
+            // spectra keep their original scan numbers.
+            final java.util.regex.Pattern scanNumber = java.util.regex.Pattern.compile("\\bnum\\s*=\\s*[\"'](\\d+)[\"']");
+            try (final RandomAccessFile scans = new RandomAccessFile(this.filename, "r")) {
+                int previousScan = 0;
+                for (int i = 0; i < offsets.size() - 1; ++i) {
+                    scans.seek(offsets.get(i));
+                    final StringBuilder tag = new StringBuilder();
+                    int ch;
+                    while ((ch = scans.read()) != -1 && ch != '>') {
+                        if (tag.length() >= 16384) throw new IOException("Oversized scan tag");
+                        tag.append((char) ch);
+                    }
+                    final java.util.regex.Matcher match = scanNumber.matcher(tag);
+                    if (ch == -1 || !match.find()) throw new IOException("Missing scan num at offset " + offsets.get(i));
+                    final int scan = Integer.parseInt(match.group(1));
+                    if (scan <= previousScan || scan == Integer.MAX_VALUE)
+                        throw new IOException("Scan IDs must be positive, unique and increasing: " + scan);
+                    this.ScanIndex.put(scan, offsets.get(i));
+                    previousScan = scan;
+                }
             }
             this.ScanIndex.put(Integer.MAX_VALUE, offsets.getLast());
         }
