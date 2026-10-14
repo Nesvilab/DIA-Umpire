@@ -224,7 +224,9 @@ public class PeakCurveClusteringCorrKDtree implements Callable<ArrayList<PeakClu
                             PeakCurve peak = peakCluster.IsoPeaksCurves[i];
                             if (peak != null && peakCluster.Corrs[i - 1] > parameter.RemoveGroupedPeaksCorr && peakCluster.OverlapRT[i - 1] > parameter.RemoveGroupedPeaksRTOverlap) {
 //                                peak.ChargeGrouped.add(charge);
-                                peak.ChargeGrouped = IonChargeHashSet.add(peak.ChargeGrouped,charge);
+                                synchronized (peak) {
+                                    peak.ChargeGrouped = IonChargeHashSet.add(peak.ChargeGrouped,charge);
+                                }
                             }
                         }
                     }
