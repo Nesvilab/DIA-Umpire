@@ -4,7 +4,7 @@ plugins {
     id 'java-library'
     id 'application'
 //    id 'idea'
-    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 group = 'umich.nesvilab'
@@ -54,8 +54,11 @@ dependencies {
 
 repositories {
     mavenCentral()
-    jcenter()
     flatDir { dirs '../lib', '../libs' }
+}
+
+jar {
+    archiveClassifier.set('plain') // the shadow jar below takes the unclassified name
 }
 
 shadowJar {

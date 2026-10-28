@@ -69,7 +69,6 @@ dependencies {
 
 repositories {
     mavenCentral()
-    jcenter()
     flatDir { dirs '../lib', '../libs' }
 }
 
