@@ -1,4 +1,4 @@
-// To compile and package DIA-Umpire_SE, mvn clean shadowDistZip. The jar file is in "dia-umpire/DIA_Umpire_SE/build/libs".
+// To compile and package DIA_Umpire_SE, run ./gradlew clean build in DIA_Umpire_SE. The fat jar is DIA_Umpire_SE/build/libs/DIA_Umpire_SE-<version>.jar.
 
 plugins {
     id 'java-library'

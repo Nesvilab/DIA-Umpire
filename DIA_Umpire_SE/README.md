@@ -9,5 +9,5 @@ Build with JDK 17 and the Gradle wrapper in this directory:
 To see what JARs are actually used in the build, there's an extra
 gradle task:
 
-`./gradlew printJarLocations`
+`./gradlew printJarLocations` (`gradlew.bat printJarLocations` on Windows)
 

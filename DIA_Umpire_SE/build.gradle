@@ -72,4 +72,4 @@ task printJarLocations {
     }
 }
 
-// To package DIA-Umpire SE, run build and the jar file is in DIA-Umpire/DIA_Umpire_SE/build/libs
+// To package DIA-Umpire SE, run build. The fat jar is DIA-Umpire/DIA_Umpire_SE/build/libs/DIA_Umpire_SE-<version>.jar; the -plain jar next to it has only the dia_umpire_se classes and resources.
