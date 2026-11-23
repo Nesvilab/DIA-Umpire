@@ -41,7 +41,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
-import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 import umich.ms.datatypes.LCMSDataSubset;
@@ -711,19 +710,31 @@ public final class mzXMLParser  extends SpectrumParserBase{
     }
 
     /**
-     * Infer scan tag offsets.
+     * Infer scan tag offsets and key them by the num attribute of each scan, the number that ParseElutionIndex
+     * puts in DIAWindows and MsLevelList. Keys can skip numbers, for example where to_mzXML dropped a spectrum
+     * without peaks.
      * @throws IOException
      */
     private void InferOffsets() throws IOException {
-        this.ScanIndex = new TreeMap<>();
+        final Infer_mzXML_offsets.ScanOffsets scans;
         try (final InputStream is = Files.newInputStream(Paths.get(this.filename));) {
-            final LongArrayList offsets = Infer_mzXML_offsets.infer_mzXML_scanno(is);
-            this.TotalScan = offsets.size();
-            for (int i=0;i<offsets.size()-1;++i){
-                this.ScanIndex.put(i+1,offsets.get(i));
-            }
-            this.ScanIndex.put(Integer.MAX_VALUE, offsets.getLast());
+            scans = Infer_mzXML_offsets.infer_mzXML_scan_offsets(is);
         }
+        final TreeMap<Integer, Long> index = new TreeMap<>();
+        int previousScanNum = -1;
+        for (int i = 0; i < scans.scanNums.size(); ++i) {
+            final int scanNum = scans.scanNums.get(i);
+            // A scan is read from its offset to the offset of the next key, so key order must be file order.
+            if (scanNum <= previousScanNum) {
+                throw new IOException(filename + ": scan number " + scanNum + " at byte offset " + scans.offsets.get(i)
+                        + " does not follow scan number " + previousScanNum + "; the scan numbers must increase");
+            }
+            index.put(scanNum, scans.offsets.get(i));
+            previousScanNum = scanNum;
+        }
+        index.put(Integer.MAX_VALUE, scans.offsets.getLast());
+        this.ScanIndex = index;
+        this.TotalScan = scans.offsets.size();
     }
 
     //Parse scan index at the bottom of mzXML file

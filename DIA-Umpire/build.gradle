@@ -30,7 +30,7 @@ sourceSets {
         }
         resources {
             srcDirs = ['src/']
-            excludes = ['*.java']
+            excludes = ['*.java', 'test/**'] // src/test holds the JUnit sources
         }
     }
 }
@@ -62,6 +62,7 @@ dependencies {
     implementation fileTree(dir: '../libs', include: '*.jar')
 
     testImplementation 'junit:junit:4.13.2'
+    testRuntimeOnly 'com.github.chhh:batmass-io:1.38.2' // mzXMLParser refers to batmass-io classes, which FragPipe provides at run time
 
     implementation 'org.eclipse.collections:eclipse-collections-api:11.0.0'
     implementation 'org.eclipse.collections:eclipse-collections:11.0.0'
