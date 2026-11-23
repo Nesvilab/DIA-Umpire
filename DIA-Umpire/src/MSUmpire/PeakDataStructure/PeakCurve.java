@@ -145,6 +145,14 @@ public class PeakCurve implements Serializable  {
         }
     }
 
+    // Called by PeakCurveClusteringCorrKDtree, whose tasks share a ForkJoinPool in PDHandlerBase.
+    // Two of them can update this curve at once; the lock keeps both charges in the bitset.
+    public void AddChargeGrouped(int charge) {
+        synchronized (this) {
+            ChargeGrouped = IonChargeHashSet.add(ChargeGrouped, charge);
+        }
+    }
+
     public float GetRawSNR() {
         return ApexInt / minIntF;
     }
