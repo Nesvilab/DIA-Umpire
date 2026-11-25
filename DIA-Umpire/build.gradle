@@ -53,7 +53,11 @@ dependencies {
 
     //implementation 'org.jfree:jfreechart:1.5.0' // for org.jfree.data.xy.XYSeriesCollection
     implementation 'org.jfree:jfreechart:1.0.19'
-    implementation 'ca.umontreal.iro.simul:ssj:3.3.1'
+    implementation('ca.umontreal.iro.simul:ssj:3.3.1') {
+        // SSJ reaches colt only through Num.expBesselK1 (cern.jet.math.Bessel), which only NormalInverseGaussianDist
+        // calls; DIA-Umpire uses NormalDist, EmpiricalDist and the kernel density classes
+        exclude group: 'colt', module: 'colt'
+    }
 
     // implementation 'com.github.chhh:batmass-io:1.38.2'
     compileOnly 'com.github.chhh:batmass-io:1.38.2'
