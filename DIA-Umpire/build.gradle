@@ -51,12 +51,16 @@ dependencies {
 
     implementation 'xmlpull:xmlpull:1.1.3.4d_b4_min' // for compomics
 
-    //implementation 'org.jfree:jfreechart:1.5.0' // for org.jfree.data.xy.XYSeriesCollection
-    implementation 'org.jfree:jfreechart:1.0.19'
+    // 1.5.x needs no jcommon (LGPL-2.1): its ui and util classes moved into org.jfree.chart.ui and org.jfree.chart.util
+    implementation 'org.jfree:jfreechart:1.5.3'
     implementation('ca.umontreal.iro.simul:ssj:3.3.1') {
         // SSJ reaches colt only through Num.expBesselK1 (cern.jet.math.Bessel), which only NormalInverseGaussianDist
         // calls; DIA-Umpire uses NormalDist, EmpiricalDist and the kernel density classes
         exclude group: 'colt', module: 'colt'
+        // SSJ's jfree:jfreechart 1.0.12 (and its jfree:jcommon 1.0.15) serves only umontreal.ssj.charts, which
+        // DIA-Umpire does not reach; jfreechart 1.5.3 above provides the org.jfree.chart and org.jfree.data packages
+        exclude group: 'jfree', module: 'jfreechart'
+        exclude group: 'jfree', module: 'jcommon'
     }
 
     // implementation 'com.github.chhh:batmass-io:1.38.2'

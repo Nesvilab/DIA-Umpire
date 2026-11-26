@@ -36,8 +36,9 @@ import java.util.ArrayList;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.block.LineBorder;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -104,6 +105,7 @@ public class RTMappingExtLib implements Runnable{
         xySeriesCollection.addSeries(series);
         JFreeChart chart = ChartFactory.createScatterPlot("Retention time mapping: R2=" + R2, "Normalized RT ("+libManager.LibID+")", "RT:" + FilenameUtils.getBaseName(TargetLCMS.mzXMLFileName), xySeriesCollection,
                 PlotOrientation.VERTICAL, true, true, false);
+        chart.getLegend().setFrame(new LineBorder()); // jfreechart 1.0.x framed the legend by default; 1.5.x does not
         XYPlot xyPlot = (XYPlot) chart.getPlot();
         xyPlot.setDomainCrosshairVisible(true);
         xyPlot.setRangeCrosshairVisible(true);
@@ -115,7 +117,7 @@ public class RTMappingExtLib implements Runnable{
         renderer.setSeriesStroke(1, new BasicStroke(3.0f));
         renderer.setSeriesStroke(0, new BasicStroke(3.0f));
         xyPlot.setBackgroundPaint(Color.white);
-        ChartUtilities.saveChartAsPNG(new File(pngfile), chart, 1000, 600);
+        ChartUtils.saveChartAsPNG(new File(pngfile), chart, 1000, 600);
     }
 
     public void GenerateMappedPepIon() {

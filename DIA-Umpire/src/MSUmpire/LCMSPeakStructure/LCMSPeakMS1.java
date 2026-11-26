@@ -48,8 +48,9 @@ import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.block.LineBorder;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -397,6 +398,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
 
         JFreeChart chart = ChartFactory.createScatterPlot("Mass calibration", "RT", "Mass error (ppm)", xySeriesCollection,
                 PlotOrientation.VERTICAL, true, true, false);
+        chart.getLegend().setFrame(new LineBorder()); // jfreechart 1.0.x framed the legend by default; 1.5.x does not
         XYPlot xyPlot = (XYPlot) chart.getPlot();
         xyPlot.setDomainCrosshairVisible(true);
         xyPlot.setRangeCrosshairVisible(true);
@@ -407,7 +409,7 @@ public class LCMSPeakMS1 extends LCMSPeakBase {
         renderer.setSeriesShape(1, new Ellipse2D.Double(0, 0, 3, 3));
         renderer.setSeriesStroke(1, new BasicStroke(1.0f));
         xyPlot.setBackgroundPaint(Color.white);
-        ChartUtilities.saveChartAsPNG(new File(pngfile), chart, 1000, 600);
+        ChartUtils.saveChartAsPNG(new File(pngfile), chart, 1000, 600);
     }
        
     public String GetIPROPHETPepXML(){

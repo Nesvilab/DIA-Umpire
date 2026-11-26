@@ -31,9 +31,10 @@ import java.util.Vector;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.block.LineBorder;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -130,6 +131,7 @@ public class MixtureModelKDESemiParametric {
         //histogramDataset.addSeries("Model hits", ModelObs, 100);
 
         JFreeChart chart = ChartFactory.createHistogram(FilenameUtils.getBaseName(pngfile), "Score", "Hits", histogramDataset, PlotOrientation.VERTICAL, true, false, false);
+        chart.getLegend().setFrame(new LineBorder()); // jfreechart 1.0.x framed the legend by default; 1.5.x does not
         XYPlot plot = chart.getXYPlot();
 
         NumberAxis domain = (NumberAxis) plot.getDomainAxis();
@@ -146,7 +148,7 @@ public class MixtureModelKDESemiParametric {
         plot.setRenderer(1, render);
         plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
         try {
-            ChartUtilities.saveChartAsPNG(new File(pngfile), chart, 1000, 600);
+            ChartUtils.saveChartAsPNG(new File(pngfile), chart, 1000, 600);
         } catch (IOException e) {
         }
     }
